@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('tuting_sessions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tutor_id')->constrained()->onDelete('cascade');
-            $table->foreignId('tutee_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tutor_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('tutee_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('unit_id')->constrained()->onDelete('cascade');
             $table->dateTime('scheduled_start');
             $table->dateTime('scheduled_stop');

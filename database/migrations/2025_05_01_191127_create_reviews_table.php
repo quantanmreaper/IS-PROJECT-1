@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('session_id')->constrained()->onDelete('cascade');
-            $table->foreignId('reviewer_id')->constrained()->onDelete('cascade');
+            $table->foreignId('session_id')->constrained('tuting_sessions')->onDelete('cascade');
+            $table->foreignId('reviewer_id')->constrained('users')->onDelete('cascade');
             $table->integer('rating')->default(1);
             $table->text('comment')->nullable();
             $table->timestamps();

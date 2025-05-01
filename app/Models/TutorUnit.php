@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class TutorUnit extends Model
 {
+    use HasFactory;
+
     protected $table = 'tutor_units';
+
     protected $fillable = [
         'tutor_id',
         'unit_id',
