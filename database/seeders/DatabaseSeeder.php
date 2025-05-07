@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
     {
         User::factory()->count(50)->create();
         Unit::factory()->count(15)->create();
-        TutorUnit::factory()->count(50)->create();
+        TutorUnit::factory()->count(20)->create();
         TutingSession::factory()->count(100)->create();
         Review::factory()->count(100)->create();
         Message::factory()->count(500)->create();

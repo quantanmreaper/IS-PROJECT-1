@@ -17,9 +17,12 @@ class MessageFactory extends Factory
      */
     public function definition(): array
     {
+        $sender = User::inRandomOrder()->first();
+        $recepient = User::where('id', '!=', $sender?->id)->inRandomOrder()->first();
+
         return [
-            'sender_id' => $sender = User::inRandomOrder()->first()?->id,
-            'recepient_id' => User::where('id', '!=', $sender?->id)->inRandomOrder()->first()?->id,
+            'sender_id' => $sender->id,
+            'recepient_id' => $recepient->id,
             'message' => $this->faker->text(255),
         ];
     }

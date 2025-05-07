@@ -19,7 +19,7 @@ class ReviewFactory extends Factory
     public function definition(): array
     {
         return [
-            'session_id' => TutingSession::where('actual_stop', '<=', now())->inRandomOrder()->first()?->id,
+            'session_id' => TutingSession::inRandomOrder()->first()?->id,
             'reviewer_id' => User::where('is_tutor', false)->inRandomOrder()->first()?->id,
             'rating' => $this->faker->numberBetween(1, 5),
             'comment' => $this->faker->text(100),
