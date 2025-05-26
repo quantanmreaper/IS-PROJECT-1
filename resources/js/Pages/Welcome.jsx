@@ -1,30 +1,12 @@
 import { Head, Link } from '@inertiajs/react';
-
+import Navbar from '@/Components/Navbar';
 export default function Welcome({ auth }) {
     return (
         <>
             <Head title="Welcome" />
 
             {/* Navbar */}
-            <nav className="w-full flex items-center justify-between px-6 py-4 bg-white/80 dark:bg-blue-900/80 shadow-md fixed top-0 left-0 z-10">
-                <div className="text-2xl font-bold text-blue-700 dark:text-white">
-                    Peer Tutoring
-                </div>
-                <div className="flex gap-6">
-                    <Link
-                        href={route('login')}
-                        className="text-blue-700 dark:text-blue-100 font-semibold hover:underline transition"
-                    >
-                        Log in
-                    </Link>
-                    <Link
-                        href={route('register')}
-                        className="text-blue-700 dark:text-blue-100 font-semibold hover:underline transition"
-                    >
-                        Register
-                    </Link>
-                </div>
-            </nav>
+           <Navbar />
 
             {/* Hero Section */}
             <section className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-300 dark:from-blue-900 dark:via-blue-800 dark:to-blue-700 pt-24 px-6 text-center">

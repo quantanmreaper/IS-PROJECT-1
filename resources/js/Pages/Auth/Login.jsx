@@ -4,6 +4,7 @@ import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
+import Navbar from '@/Components/Navbar';
 import { Head, Link, useForm } from '@inertiajs/react';
 
 export default function Login({ status, canResetPassword }) {
@@ -21,10 +22,25 @@ export default function Login({ status, canResetPassword }) {
         });
     };
 
+    // SVG icons for fields
+    const icons = {
+        email: (
+             <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <rect x="3" y="5" width="18" height="14" rx="2" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 7l9 6 9-6" />
+            </svg>
+        ),
+        password: (
+            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c1.657 0 3-1.343 3-3V7a3 3 0 10-6 0v1c0 1.657 1.343 3 3 3zm6 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2v-6a2 2 0 012-2h8a2 2 0 012 2z" />
+            </svg>
+        ),
+    };
+
     return (
         <GuestLayout>
             <Head title="Log in" />
-
+            <Navbar />
             <div className="flex flex-col items-center justify-center min-h-[70vh] bg-gradient-to-br from-blue-200 via-white to-blue-400 dark:from-blue-900 dark:via-blue-800 dark:to-blue-700 transition-colors duration-500">
                 <div className="w-full max-w-md bg-white/95 dark:bg-blue-900/90 rounded-3xl shadow-2xl p-8 sm:p-12 border-2 border-blue-200 dark:border-blue-800">
                     <div className="flex flex-col items-center mb-8">
@@ -46,30 +62,36 @@ export default function Login({ status, canResetPassword }) {
                     <form onSubmit={submit} className="space-y-6">
                         <div>
                             <InputLabel htmlFor="email" value="Email" className="text-blue-700 dark:text-blue-100" />
-                            <TextInput
-                                id="email"
-                                type="email"
-                                name="email"
-                                value={data.email}
-                                className="mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
-                                autoComplete="username"
-                                isFocused={true}
-                                onChange={(e) => setData('email', e.target.value)}
-                            />
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2">{icons.email}</span>
+                                <TextInput
+                                    id="email"
+                                    type="email"
+                                    name="email"
+                                    value={data.email}
+                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
+                                    autoComplete="username"
+                                    isFocused={true}
+                                    onChange={(e) => setData('email', e.target.value)}
+                                />
+                            </div>
                             <InputError message={errors.email} className="mt-2" />
                         </div>
 
                         <div>
                             <InputLabel htmlFor="password" value="Password" className="text-blue-700 dark:text-blue-100" />
-                            <TextInput
-                                id="password"
-                                type="password"
-                                name="password"
-                                value={data.password}
-                                className="mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
-                                autoComplete="current-password"
-                                onChange={(e) => setData('password', e.target.value)}
-                            />
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2">{icons.password}</span>
+                                <TextInput
+                                    id="password"
+                                    type="password"
+                                    name="password"
+                                    value={data.password}
+                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
+                                    autoComplete="current-password"
+                                    onChange={(e) => setData('password', e.target.value)}
+                                />
+                            </div>
                             <InputError message={errors.password} className="mt-2" />
                         </div>
 
