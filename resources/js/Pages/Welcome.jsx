@@ -30,7 +30,7 @@ export default function Welcome({ auth }) {
             <section className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-300 dark:from-blue-900 dark:via-blue-800 dark:to-blue-700 pt-24 px-6 text-center">
     <div className="w-full max-w-5xl px-4">
         <div className="mb-8">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-blue-800 dark:text-white leading-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-blue-600 dark:text-white leading-tight">
                 Peer Tutoring & Mentorship Platform
             </h1>
         </div>
