@@ -30,7 +30,7 @@ export default function Welcome({ auth }) {
             </Link>
             <Link
                 href={route('login')}
-                className="bg-white dark:bg-blue-800 border border-blue-600 text-blue-700 dark:text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-100 dark:hover:bg-blue-700 transition shadow"
+                className="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition shadow-lg"
             >
                 Log In
             </Link>
