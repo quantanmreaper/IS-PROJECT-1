@@ -118,9 +118,14 @@ export default function Login({ status, canResetPassword }) {
                             )}
                         </div>
 
-                        <PrimaryButton className="w-full bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-2 rounded-xl shadow-lg transition-all duration-200" disabled={processing}>
-                            Log in
-                        </PrimaryButton>
+                            <div className="flex justify-center">
+                            <PrimaryButton
+                                className="bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-2 px-8 rounded-xl shadow-lg transition-all duration-200"
+                                disabled={processing}
+                            >
+                                Log in
+                            </PrimaryButton>
+                        </div>
                     </form>
 
                     <div className="mt-8 text-center">

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->boolean('is_mentor')->after('is_tutor')->default(false);
-            $table->string('phone_number')->after('email')->default(0);
+            $table->string('phone_number')->after('is_mentor')->nullable();
         });
     }
 

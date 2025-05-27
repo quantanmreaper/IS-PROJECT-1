@@ -141,8 +141,8 @@ export default function Register() {
                                     className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
                                     required
                                 >
-                                    <option value="">Select user type</option>
-                                    <option value="standarduser">Standard User</option>
+                                    <option value="" disabled>Select user type</option>
+                                    <option value="standard user">Standard User</option>
                                     <option value="admin">Admin</option>
                                 </select>
                             </div>
