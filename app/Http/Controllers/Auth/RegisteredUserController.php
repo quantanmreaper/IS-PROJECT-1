@@ -35,7 +35,7 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:users,email',
             'password' => ['required', 'string', 'min:8', 'confirmed', Rules\Password::min(8)->letters()->numbers()->symbols()->mixedCase()],
-            'usertype' => 'required',
+            // 'usertype' => 'required',
             'bio' => 'required',
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'phone' => 'required',
@@ -51,7 +51,7 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'user_type' => $request->usertype,
+            'user_type' => 'standard user',
             'bio' => $request->bio,
             'phone_number' => $request->phone,
         ]);
