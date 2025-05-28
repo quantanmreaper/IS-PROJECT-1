@@ -10,7 +10,7 @@ export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         email: "",
-        usertype: "",
+        //usertype: "",
         bio: "",
         profile_photo: null,
         phone: "",
@@ -64,26 +64,26 @@ export default function Register() {
                 />
             </svg>
         ),
-        usertype: (
-            <svg
-                className="w-5 h-5 text-blue-400"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2a2 2 0 002 2h12a2 2 0 002-2v-2c0-2.66-5.33-4-8-4z"
-                />
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M17 11V7a5 5 0 015 5v2a5 5 0 01-5 5"
-                />
-            </svg>
-        ),
+        // usertype: (
+        //     <svg
+        //         className="w-5 h-5 text-blue-400"
+        //         fill="none"
+        //         stroke="currentColor"
+        //         strokeWidth="2"
+        //         viewBox="0 0 24 24"
+        //     >
+        //         <path
+        //             strokeLinecap="round"
+        //             strokeLinejoin="round"
+        //             d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2a2 2 0 002 2h12a2 2 0 002-2v-2c0-2.66-5.33-4-8-4z"
+        //         />
+        //         <path
+        //             strokeLinecap="round"
+        //             strokeLinejoin="round"
+        //             d="M17 11V7a5 5 0 015 5v2a5 5 0 01-5 5"
+        //         />
+        //     </svg>
+        // ),
         bio: (
             <svg
                 className="w-5 h-5 text-blue-400"
@@ -249,7 +249,7 @@ export default function Register() {
                         </div>
 
                         {/* User Type */}
-                        <div>
+                        {/* <div>
                             <InputLabel htmlFor="usertype" value="User Type" />
                             <div className="relative">
                                 <span className="absolute left-3 top-1/2 -translate-y-1/2">
@@ -278,7 +278,7 @@ export default function Register() {
                                 message={errors.usertype}
                                 className="mt-2"
                             />
-                        </div>
+                        </div> */}
 
                         {/* Bio */}
                         <div>
