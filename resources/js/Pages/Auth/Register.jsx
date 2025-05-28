@@ -1,75 +1,163 @@
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
-import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
-import GuestLayout from '@/Layouts/GuestLayout';
-import Navbar from '@/Components/Navbar';
-import { Head, Link, useForm } from '@inertiajs/react';
+import InputError from "@/Components/InputError";
+import InputLabel from "@/Components/InputLabel";
+import PrimaryButton from "@/Components/PrimaryButton";
+import TextInput from "@/Components/TextInput";
+import GuestLayout from "@/Layouts/GuestLayout";
+import Navbar from "@/Components/Navbar";
+import { Head, Link, useForm } from "@inertiajs/react";
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
-        name: '',
-        email: '',
-        usertype: '',
-        bio: '',
-        //profile_photo: null,
-        phone: '',
-        password: '',
-        password_confirmation: '',
+        name: "",
+        email: "",
+        usertype: "",
+        bio: "",
+        profile_photo: null,
+        phone: "",
+        password: "",
+        password_confirmation: "",
     });
 
     const submit = (e) => {
         e.preventDefault();
 
-        post(route('register'), {
-            onFinish: () => reset('password', 'password_confirmation'),
+        post(route("register"), {
+            onFinish: () => reset("password", "password_confirmation"),
         });
     };
 
     // SVG icons for fields
     const icons = {
         name: (
-            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            <svg
+                className="w-5 h-5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5.121 17.804A9 9 0 1112 21a9 9 0 01-6.879-3.196z"
+                />
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                />
             </svg>
         ),
         email: (
-             <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg
+                className="w-5 h-5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+            >
                 <rect x="3" y="5" width="18" height="14" rx="2" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 7l9 6 9-6" />
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 7l9 6 9-6"
+                />
             </svg>
         ),
         usertype: (
-               <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2a2 2 0 002 2h12a2 2 0 002-2v-2c0-2.66-5.33-4-8-4z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 11V7a5 5 0 015 5v2a5 5 0 01-5 5" />
+            <svg
+                className="w-5 h-5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2a2 2 0 002 2h12a2 2 0 002-2v-2c0-2.66-5.33-4-8-4z"
+                />
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17 11V7a5 5 0 015 5v2a5 5 0 01-5 5"
+                />
             </svg>
         ),
         bio: (
-            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M8 16h8M8 12h8m-8-4h8M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            <svg
+                className="w-5 h-5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 16h8M8 12h8m-8-4h8M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
             </svg>
         ),
         profile_photo: (
-            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2h-3.382a1 1 0 01-.894-.553l-.724-1.447A1 1 0 0012 2h0a1 1 0 00-.894.553l-.724 1.447A1 1 0 009.382 5H6a2 2 0 00-2 2z" />
+            <svg
+                className="w-5 h-5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2h-3.382a1 1 0 01-.894-.553l-.724-1.447A1 1 0 0012 2h0a1 1 0 00-.894.553l-.724 1.447A1 1 0 009.382 5H6a2 2 0 00-2 2z"
+                />
                 <circle cx="12" cy="13" r="4" />
             </svg>
         ),
         phone: (
-            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm8-8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zm8-8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5z" />
+            <svg
+                className="w-5 h-5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm8-8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2zm8-8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5z"
+                />
             </svg>
         ),
         password: (
-            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c1.657 0 3-1.343 3-3V7a3 3 0 10-6 0v1c0 1.657 1.343 3 3 3zm6 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2v-6a2 2 0 012-2h8a2 2 0 012 2z" />
+            <svg
+                className="w-5 h-5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 11c1.657 0 3-1.343 3-3V7a3 3 0 10-6 0v1c0 1.657 1.343 3 3 3zm6 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2v-6a2 2 0 012-2h8a2 2 0 012 2z"
+                />
             </svg>
         ),
         password_confirmation: (
-            <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            <svg
+                className="w-5 h-5 text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+            >
+                <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M5 13l4 4L19 7"
+                />
             </svg>
         ),
     };
@@ -82,19 +170,39 @@ export default function Register() {
                 <div className="w-full max-w-lg bg-white/95 dark:bg-blue-900/90 rounded-3xl shadow-2xl p-8 sm:p-12 border-2 border-blue-200 dark:border-blue-800">
                     <div className="flex flex-col items-center mb-8">
                         <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 dark:from-blue-700 dark:to-blue-900 flex items-center justify-center mb-4 shadow-xl">
-                            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z" />
+                            <svg
+                                className="w-10 h-10 text-white"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M12 11c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"
+                                />
                             </svg>
                         </div>
-                        <h2 className="text-3xl font-extrabold text-blue-600 dark:text-white mb-2 tracking-tight drop-shadow">Create Your Account</h2>
-                        <p className="text-base text-blue-900 dark:text-blue-100 text-center">Join our platform and start your journey!</p>
+                        <h2 className="text-3xl font-extrabold text-blue-600 dark:text-white mb-2 tracking-tight drop-shadow">
+                            Create Your Account
+                        </h2>
+                        <p className="text-base text-blue-900 dark:text-blue-100 text-center">
+                            Join our platform and start your journey!
+                        </p>
                     </div>
-                    <form onSubmit={submit} encType="multipart/form-data" className="space-y-5">
+                    <form
+                        onSubmit={submit}
+                        encType="multipart/form-data"
+                        className="space-y-5"
+                    >
                         {/* Name */}
                         <div>
                             <InputLabel htmlFor="name" value="Name" />
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2">{icons.name}</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                                    {icons.name}
+                                </span>
                                 <TextInput
                                     id="name"
                                     name="name"
@@ -102,18 +210,25 @@ export default function Register() {
                                     className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
                                     autoComplete="name"
                                     isFocused={true}
-                                    onChange={(e) => setData('name', e.target.value)}
+                                    onChange={(e) =>
+                                        setData("name", e.target.value)
+                                    }
                                     required
                                 />
                             </div>
-                            <InputError message={errors.name} className="mt-2" />
+                            <InputError
+                                message={errors.name}
+                                className="mt-2"
+                            />
                         </div>
 
                         {/* Email */}
                         <div>
                             <InputLabel htmlFor="email" value="Email" />
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2">{icons.email}</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                                    {icons.email}
+                                </span>
                                 <TextInput
                                     id="email"
                                     type="email"
@@ -121,44 +236,64 @@ export default function Register() {
                                     value={data.email}
                                     className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
                                     autoComplete="username"
-                                    onChange={(e) => setData('email', e.target.value)}
+                                    onChange={(e) =>
+                                        setData("email", e.target.value)
+                                    }
                                     required
                                 />
                             </div>
-                            <InputError message={errors.email} className="mt-2" />
+                            <InputError
+                                message={errors.email}
+                                className="mt-2"
+                            />
                         </div>
 
                         {/* User Type */}
                         <div>
                             <InputLabel htmlFor="usertype" value="User Type" />
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2">{icons.usertype}</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                                    {icons.usertype}
+                                </span>
                                 <select
                                     id="usertype"
                                     name="usertype"
                                     value={data.usertype}
-                                    onChange={e => setData('usertype', e.target.value)}
+                                    onChange={(e) =>
+                                        setData("usertype", e.target.value)
+                                    }
                                     className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
                                     required
                                 >
-                                    <option value="" disabled>Select user type</option>
-                                    <option value="standard user">Standard User</option>
+                                    <option value="" disabled>
+                                        Select user type
+                                    </option>
+                                    <option value="standard user">
+                                        Standard User
+                                    </option>
                                     <option value="admin">Admin</option>
                                 </select>
                             </div>
-                            <InputError message={errors.usertype} className="mt-2" />
+                            <InputError
+                                message={errors.usertype}
+                                className="mt-2"
+                            />
                         </div>
 
                         {/* Bio */}
                         <div>
                             <InputLabel htmlFor="bio" value="Bio" />
                             <div className="relative">
-                                <span className="absolute left-3 top-4">{icons.bio}</span>
+                                <span className="absolute left-3 top-4">
+                                    {icons.bio}
+                                </span>
                                 <textarea
                                     id="bio"
                                     name="bio"
                                     value={data.bio}
-                                    onChange={e => setData('bio', e.target.value)}
+                                    onChange={(e) =>
+                                        setData("bio", e.target.value)
+                                    }
                                     className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
                                     rows={3}
                                     placeholder="Tell us about yourself..."
@@ -169,26 +304,41 @@ export default function Register() {
 
                         {/* Profile Photo */}
                         <div>
-                            <InputLabel htmlFor="profile_photo" value="Profile Photo" />
+                            <InputLabel
+                                htmlFor="profile_photo"
+                                value="Profile Photo"
+                            />
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2">{icons.profile_photo}</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                                    {icons.profile_photo}
+                                </span>
                                 <input
                                     id="profile_photo"
                                     name="profile_photo"
                                     type="file"
                                     accept="image/*"
                                     className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400 bg-white"
-                                    onChange={e => setData('profile_photo', e.target.files[0])}
+                                    onChange={(e) =>
+                                        setData(
+                                            "profile_photo",
+                                            e.target.files[0]
+                                        )
+                                    }
                                 />
                             </div>
-                            <InputError message={errors.profile_photo} className="mt-2" />
+                            <InputError
+                                message={errors.profile_photo}
+                                className="mt-2"
+                            />
                         </div>
 
                         {/* Phone Number */}
                         <div>
                             <InputLabel htmlFor="phone" value="Phone Number" />
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2">{icons.phone}</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                                    {icons.phone}
+                                </span>
                                 <TextInput
                                     id="phone"
                                     name="phone"
@@ -196,18 +346,25 @@ export default function Register() {
                                     value={data.phone}
                                     className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
                                     autoComplete="tel"
-                                    onChange={e => setData('phone', e.target.value)}
+                                    onChange={(e) =>
+                                        setData("phone", e.target.value)
+                                    }
                                     placeholder="e.g. 07123456789"
                                 />
                             </div>
-                            <InputError message={errors.phone} className="mt-2" />
+                            <InputError
+                                message={errors.phone}
+                                className="mt-2"
+                            />
                         </div>
 
                         {/* Password */}
                         <div>
                             <InputLabel htmlFor="password" value="Password" />
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2">{icons.password}</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                                    {icons.password}
+                                </span>
                                 <TextInput
                                     id="password"
                                     type="password"
@@ -215,11 +372,16 @@ export default function Register() {
                                     value={data.password}
                                     className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
                                     autoComplete="new-password"
-                                    onChange={(e) => setData('password', e.target.value)}
+                                    onChange={(e) =>
+                                        setData("password", e.target.value)
+                                    }
                                     required
                                 />
                             </div>
-                            <InputError message={errors.password} className="mt-2" />
+                            <InputError
+                                message={errors.password}
+                                className="mt-2"
+                            />
                         </div>
 
                         {/* Confirm Password */}
@@ -229,7 +391,9 @@ export default function Register() {
                                 value="Confirm Password"
                             />
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2">{icons.password_confirmation}</span>
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                                    {icons.password_confirmation}
+                                </span>
                                 <TextInput
                                     id="password_confirmation"
                                     type="password"
@@ -238,7 +402,10 @@ export default function Register() {
                                     className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
                                     autoComplete="new-password"
                                     onChange={(e) =>
-                                        setData('password_confirmation', e.target.value)
+                                        setData(
+                                            "password_confirmation",
+                                            e.target.value
+                                        )
                                     }
                                     required
                                 />
@@ -251,11 +418,15 @@ export default function Register() {
 
                         <div className="flex items-center justify-between mt-6">
                             <Link
-                                href={route('login')}
-                                className="text-blue-600 hover:underline font-semibold dark:text-blue-200"                            >
+                                href={route("login")}
+                                className="text-blue-600 hover:underline font-semibold dark:text-blue-200"
+                            >
                                 LogIn
                             </Link>
-                            <PrimaryButton className="ms-4 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-2 px-6 rounded-xl shadow-lg transition-all duration-200" disabled={processing}>
+                            <PrimaryButton
+                                className="ms-4 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-2 px-6 rounded-xl shadow-lg transition-all duration-200"
+                                disabled={processing}
+                            >
                                 Register
                             </PrimaryButton>
                         </div>
