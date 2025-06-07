@@ -33,13 +33,14 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|lowercase|email|max:255|unique:users,email',
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email', 'regex:/^[^@]+@strathmore\.edu$/'],
             'password' => ['required', 'string', 'min:8', 'confirmed', Rules\Password::min(8)->letters()->numbers()->symbols()->mixedCase()],
-            // 'usertype' => 'required',
             'bio' => 'required',
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'student_id' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'phone' => 'required',
-
+        ], [
+            'email.regex' => 'The Email must be a valid Strathmore university address'
         ]);
 
 
@@ -59,6 +60,12 @@ class RegisteredUserController extends Controller
         if ($request->hasFile('profile_photo')) {
             $path = $request->file('profile_photo')->store('pfps', 'public');
             $user->pfp = $path;
+            $user->save(); // Save after adding the image path
+        }
+
+        if ($request->hasFile('student_id')) {
+            $path = $request->file('student_id')->store('ids', 'public');
+            $user->student_id = $path;
             $user->save(); // Save after adding the image path
         }
 

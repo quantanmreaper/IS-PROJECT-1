@@ -25,7 +25,8 @@ class UserFactory extends Factory
     {
         return [
             'name' => $this->faker->name(),
-            'email' => $this->faker->unique()->safeEmail(),
+            'email' => $this->faker->unique()->userName() . '@strathmore.edu',
+            'gender' => $this->faker->randomElement(['m', 'f']),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('Laws2017'),
             'remember_token' => Str::random(10),
@@ -33,6 +34,7 @@ class UserFactory extends Factory
             'is_tutor' => $this->faker->boolean(30),
             'bio' => $this->faker->text(200),
             'pfp' => 'defaultpfp.png',
+            'student_id' => 'defaultStudentId.pdf',
         ];
     }
 

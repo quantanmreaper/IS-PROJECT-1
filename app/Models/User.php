@@ -26,6 +26,16 @@ class User extends Authenticatable implements MustVerifyEmail
         'remember_token',
     ];
 
+    public function Tutors()
+    {
+        return $this->hasMany(TutorDetails::class, 'tutor_id');
+    }
+
+    public function Mentors()
+    {
+        return $this->hasMany(MentorDetails::class, 'mentor_id');
+    }
+
     public function units()
     {
         return $this->belongsToMany(Unit::class, 'tutor_units', 'tutor_id', 'unit_id')

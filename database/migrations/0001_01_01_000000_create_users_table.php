@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('user_type', ['standard user', 'admin'])->default('standard user');
-            $table->boolean('is_tutor')->default('false');
+            $table->boolean('is_tutor')->default(value: false);
             $table->text('bio')->nullable();
             $table->string('pfp')->default('defaultpfp.png');
             $table->rememberToken();
