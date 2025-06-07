@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\TutorRegistrationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Foundation\Application;
@@ -24,9 +25,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/UnitsAddition', [UnitController::class, 'create'])->name('UnitsAddition');
+    Route::post('/UnitsAddition', [UnitController::class, 'store'])->name('UnitsAddition.store');
+    Route::get('/TutorRegistration',[TutorRegistrationController::class, 'create'])->name('TutorRegistration');
 });
 
-Route::resource('units', UnitController::class)
-    ->names('unit');
+/* Route::resource('units', UnitController::class)
+    ->names('unit'); */
 
 require __DIR__ . '/auth.php';

@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
 
 
 
-        Log::info('User type received:', ['usertype' => $request->usertype]);
+        //Log::info('User type received:', ['usertype' => $request->usertype]);
 
         $user = User::create([
 
@@ -76,6 +76,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('login', absolute: false));
+        
     }
 }
