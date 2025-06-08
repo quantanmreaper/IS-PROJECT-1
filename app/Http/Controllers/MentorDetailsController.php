@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;        
+use Illuminate\Http\Request;  
+use Inertia\Inertia;  
+use Inertia\Response;
 use App\Models\MentorDetails;
-use Illuminate\Http\Request;
-
+use Illuminate\Http\RedirectResponse;
+//use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 class MentorDetailsController extends Controller
 {
     /**
@@ -18,9 +23,10 @@ class MentorDetailsController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): Response
     {
-        //
+        
+        return Inertia::render('Auth/MentorRegistration');
     }
 
     /**

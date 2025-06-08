@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TutorDetails;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TutorDetailsController extends Controller
 {
@@ -21,6 +22,7 @@ class TutorDetailsController extends Controller
     public function create()
     {
         //
+        return Inertia::render('Auth/TutorRegistration');
     }
 
     /**

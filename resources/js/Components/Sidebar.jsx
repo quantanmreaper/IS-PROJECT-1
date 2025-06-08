@@ -6,23 +6,40 @@ const links = [
         label: 'Dashboard',
         icon: (
              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <rect x="3" y="3" width="7" height="7" rx="1" />
-            <rect x="14" y="3" width="7" height="7" rx="1" />
-            <rect x="14" y="14" width="7" height="7" rx="1" />
-            <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
             </svg>
         ),
     },
     {
-        //href: route('Mentor'),
+        href: route('MentorRegistration'),
         label: 'Become a Mentor',
+        icon: (
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+               <circle cx="12" cy="8" r="4" />
+               <path strokeLinecap="round" strokeLinejoin="round" d="M4 20c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+           </svg>
+       ),
     },
     {
-
+        href: route('TutorRegistration'),
         label: 'Become a Tutor',
+        icon: (
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13.477V19a2 2 0 01-2 2H5a2 2 0 01-2-2v-5.523a12.083 12.083 0 012.84-2.899L12 14z" />
+            </svg>
+        ),
     },
     {
         label: 'Achievements',
+        icon: (
+            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 21l4-4 4 4m0 0V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16m16 0V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
+            </svg>
+        ),
     },
     {
         href: route('UnitsAddition'),
@@ -36,6 +53,7 @@ const links = [
         ),
     },
     {
+        
         href: route('profile.edit'),
         label: 'Profile',
         icon: (
@@ -45,21 +63,34 @@ const links = [
             </svg>
         ),
     },
+    
     // Add more links as needed
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ mobile, closeSidebar }) {
     return (
-        <aside className="h-screen w-64 bg-gradient-to-b from-blue-600 to-blue-800 text-white fixed top-0 left-0 flex flex-col shadow-lg z-20">
-            <div className="p-6 text-2xl font-bold tracking-wide">
-                Peer Mentor & Tutoring
+        <aside className="h-full w-64 bg-gradient-to-b from-blue-600 to-blue-800 text-white flex flex-col shadow-lg z-20 md:fixed md:top-0 md:left-0">
+            <div className="flex items-center justify-between p-4 md:p-6">
+                <div className="text-xl md:text-2xl font-bold tracking-wide">
+                    Peer Mentor & Tutoring
+                </div>
+                {mobile && (
+                    <button 
+                        onClick={closeSidebar}
+                        className="text-white hover:text-gray-200 md:hidden"
+                    >
+                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                )}
             </div>
-            <nav className="flex-1 px-4 space-y-2">
+            <nav className="flex-1 px-3 md:px-4 space-y-1 md:space-y-2 overflow-y-auto">
                 {links.map((link) => (
                     <Link
-                        key={link.href}
+                        key={link.href || link.label}
                         href={link.href}
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-blue-700 transition"
+                        className="flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 rounded-lg hover:bg-blue-700 transition"
                     >
                         {link.icon}
                         <span>{link.label}</span>
