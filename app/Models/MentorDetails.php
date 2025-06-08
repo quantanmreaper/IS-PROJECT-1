@@ -12,6 +12,7 @@ class MentorDetails extends Model
         'skills',
         'hobbies',
         'work_experience',
+        'approval_status',
     ];
     public function Mentor()
     {
