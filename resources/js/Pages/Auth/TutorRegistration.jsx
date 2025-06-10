@@ -1,62 +1,100 @@
-import React from "react";
+import { useRef } from "react";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import { Head, useForm } from "@inertiajs/react";
 
-const TutorRegistrationModal = ({ isOpen, onClose, onConfirm }) => {
-  if (!isOpen) return null;
+export default function TutorRegistration() {
+    const { data, setData, post, processing, errors, reset } = useForm({
+        progress_report: null,
+        hourly_rate: "",
+    });
+    const fileInput = useRef();
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 relative">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-xl"
-        >
-          &times;
-        </button>
+    const handleChange = (e) => {
+        const { name, type, value, files } = e.target;
+        if (type === "file") {
+            setData(name, files[0]);
+        } else {
+            setData(name, value);
+        }
+    };
 
-        {/* Title */}
-        <h2 className="text-2xl font-semibold text-center mb-2">
-          Do you want to become a tutor?
-        </h2>
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        post(route('TutorRegistration'), {
+            forceFormData: true,
+            onSuccess: () => reset(),
+        });
+    };
 
-        {/* Description */}
-        <p className="text-center text-gray-600 mb-6">
-          As a tutor, you'll help fellow students, gain experience, and even earn rewards. It only takes a minute to register.
-        </p>
-
-        {/* Action Buttons */}
-        <div className="flex flex-col gap-3">
-          <button
-            onClick={onConfirm}
-            className="bg-blue-600 text-white rounded-xl px-4 py-2 hover:bg-blue-700 transition"
-          >
-            ✅ Yes, I want to register as a tutor
-          </button>
-          <button
-            onClick={onClose}
-            className="border border-gray-300 text-gray-700 rounded-xl px-4 py-2 hover:bg-gray-100 transition"
-          >
-            ❌ No, maybe later
-          </button>
+    return (
+        <AuthenticatedLayout     header={
+        <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
+                {/* Graduation Cap Icon */}
+                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422A12.083 12.083 0 0121 13.477V19a2 2 0 01-2 2H5a2 2 0 01-2-2v-5.523a12.083 12.083 0 012.84-2.899L12 14z" />
+                </svg>
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-blue-700 drop-shadow tracking-tight">
+                Tutor Registration
+            </h2>
         </div>
-
-        {/* Optional Extra Info */}
-        <div className="mt-6 text-sm text-gray-500 text-center">
-          <p><strong>What does being a tutor involve?</strong></p>
-          <ul className="mt-2 space-y-1">
-            <li>• Help students in 1-on-1 or group sessions</li>
-            <li>• Choose your own availability and subjects</li>
-            <li>• Earn experience and recognition</li>
-          </ul>
-        </div>
-
-        {/* Footer Note */}
-        <div className="mt-6 text-xs text-center text-gray-400">
-          You can always become a tutor later from your profile settings.
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default TutorRegistrationModal;
+    }
+>
+            <Head title="Tutor Registration" />
+            <div className="pt-6 pb-12 min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100">
+                <div className="mx-auto max-w-xl sm:px-6 lg:px-8">
+                    <div className="bg-white/90 p-8 shadow-2xl rounded-3xl border border-blue-100 relative overflow-hidden">
+                        <div className="mb-8 text-center">
+                            <h1 className="text-3xl font-extrabold text-blue-700 mb-2 drop-shadow">Become a Tutor</h1>
+                            <p className="text-gray-600">Upload your progress report and set your hourly rate to join as a tutor.</p>
+                        </div>
+                        <form onSubmit={handleSubmit} className="space-y-6 z-10 relative" encType="multipart/form-data">
+                            {/* Progress Report */}
+                            <div>
+                                <label className="block mb-1 font-semibold text-blue-700">Progress Report (PDF)</label>
+                                <input
+                                    type="file"
+                                    name="progress_report"
+                                    accept="application/pdf"
+                                    ref={fileInput}
+                                    onChange={handleChange}
+                                    className="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition bg-white"
+                                    required
+                                />
+                                {errors.progress_report && (
+                                    <div className="text-red-500 text-sm mt-1">{errors.progress_report}</div>
+                                )}
+                            </div>
+                            {/* Hourly Rate */}
+                            <div>
+                                <label className="block mb-1 font-semibold text-blue-700">Hourly Rate (Ksh)</label>
+                                <input
+                                    type="number"
+                                    name="hourly_rate"
+                                    value={data.hourly_rate}
+                                    onChange={handleChange}
+                                    min="100"
+                                    step="100"
+                                    className="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition bg-white"
+                                    required
+                                />
+                                {errors.hourly_rate && (
+                                    <div className="text-red-500 text-sm mt-1">{errors.hourly_rate}</div>
+                                )}
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:from-blue-800 hover:to-blue-900 transition-all duration-200 mt-4"
+                            >
+                                Register as Tutor
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </AuthenticatedLayout>
+    );
+}
