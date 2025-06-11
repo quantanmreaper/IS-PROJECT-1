@@ -5,6 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\TutorDetails;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Models\Unit;
+use Illuminate\Support\Facades\Auth;
+use App\Models\TutorUnit;
+use App\Models\User;
+use Inertia\Response;
 
 class TutorDetailsController extends Controller
 {
@@ -13,7 +18,7 @@ class TutorDetailsController extends Controller
      */
     public function index()
     {
-        //
+        return redirect()->route('TutorRegistration.create');
     }
 
     /**
@@ -21,8 +26,8 @@ class TutorDetailsController extends Controller
      */
     public function create()
     {
-        //
-        return Inertia::render('Auth/TutorRegistration');
+        $units = Unit::select('id', 'name')->get();
+        return Inertia::render('Auth/TutorRegistration', ['units' => $units]);
     }
 
     /**
@@ -30,7 +35,37 @@ class TutorDetailsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'progress_report' => 'required|file|mimes:pdf|max:2048',
+            'hourly_rate' => 'required|numeric|min:100',
+            'units' => 'required|array|min:1',
+            'units.*' => 'exists:units,id',
+            'available_from' => 'required|date_format:H:i',
+            'available_until' => 'required|date_format:H:i|after:available_from',
+        ]);
+
+        $progressReportPath = $request->file('progress_report')->store('progress_reports', 'public');
+
+        TutorDetails::create([
+            'tutor_id' => Auth::id(),
+            'progress_report' => $progressReportPath,
+            'approval_status' => true,
+            'hourly_rate' => $request->hourly_rate,
+            'availability_start' => $request->available_from,
+            'availability_stop' => $request->available_until,
+        ]);
+
+        foreach ($request->units as $unitId) {
+            TutorUnit::create([
+                'tutor_id' => Auth::id(),
+                'unit_id' => $unitId,
+                'proficiency_level' => 2,
+            ]);
+        }
+
+        $user  = Auth::user();
+        $user->is_tutor = true;
+        $user->save();
     }
 
     /**
