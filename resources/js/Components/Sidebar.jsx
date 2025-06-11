@@ -92,6 +92,25 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
         },
 
         {
+            label: "Get Mentored",
+            icon: (
+                <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M8 21l4-4 4 4m0 0V5a2 2 0 00-2-2H6a2 2 0 00-2 2v16m16 0V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"
+                    />
+                </svg>
+            ),
+        },
+
+        {
             href: route("UnitsAddition"),
             label: "Units Addition",
             icon: (

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\TutorRegistrationController;
 use App\Http\Controllers\GetTutoredController;
+use App\Http\Controllers\GetMentoredController;
 use App\Http\Controllers\MentorDetailsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TutorDetailsController;
@@ -33,6 +34,11 @@ Route::resource('GetTutored', GetTutoredController::class)
     ->middleware(['auth', 'verified'])
     ->parameters(['GetTutored' => 'tutor'])
     ->names('GetTutored');
+
+Route::resource('GetMentored', GetMentoredController::class)
+    ->middleware(['auth', 'verified'])
+    ->parameters(['GetMentored' => 'mentor'])
+    ->names('GetMentored');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
