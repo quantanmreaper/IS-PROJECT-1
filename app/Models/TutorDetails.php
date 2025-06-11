@@ -20,4 +20,9 @@ class TutorDetails extends Model
     {
         return $this->belongsTo(User::class, 'tutor_id');
     }
+
+    public function units()
+    {
+        return $this->belongsToMany(Unit::class, 'tutor_units', 'tutor_id', 'unit_id');
+    }
 }
