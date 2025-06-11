@@ -5,7 +5,6 @@ use App\Http\Controllers\MentorDetailsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TutorDetailsController;
 use App\Http\Controllers\UnitController;
-use App\Http\Controllers\TutorDetailsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
