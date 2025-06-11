@@ -14,7 +14,7 @@ export default function AuthenticatedLayout({ header, children }) {
         <div className="flex min-h-screen bg-gray-100">
             {/* Desktop sidebar */}
             <div className="hidden md:block">
-                <Sidebar />
+                <Sidebar user={user} />
             </div>
             
             {/* Mobile sidebar */}
@@ -22,7 +22,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 <div className="fixed inset-0 z-40 md:hidden">
                     {/* Sidebar */}
                     <div className="fixed inset-y-0 left-0 w-64 z-50">
-                        <Sidebar mobile={true} closeSidebar={() => setSidebarOpen(false)} />
+                        <Sidebar user={user} mobile={true} closeSidebar={() => setSidebarOpen(false)} />
                     </div>
                     {/* Backdrop */}
                     <div 

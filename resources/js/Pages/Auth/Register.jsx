@@ -13,7 +13,9 @@ export default function Register() {
         //usertype: "",
         bio: "",
         profile_photo: null,
+        student_id: null,
         phone: "",
+        gender: "",
         password: "",
         password_confirmation: "",
     });
@@ -248,6 +250,29 @@ export default function Register() {
                             />
                         </div>
 
+                        {/* Gender */}
+                            <div>
+                                <InputLabel htmlFor="gender" value="Gender" />
+                                <div className="relative">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                                        {/* Optionally add an icon here */}
+                                    </span>
+                                    <select
+                                        id="gender"
+                                        name="gender"
+                                        value={data.gender}
+                                        onChange={e => setData("gender", e.target.value)}
+                                        className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
+                                        required
+                                    >
+                                        <option value="" disabled>Select gender</option>
+                                        <option value="m">Male</option>
+                                        <option value="f">Female</option>
+                                    </select>
+                                </div>
+                                <InputError message={errors.gender} className="mt-2" />
+                            </div>
+
                         {/* User Type */}
                         {/* <div>
                             <InputLabel htmlFor="usertype" value="User Type" />
@@ -301,6 +326,30 @@ export default function Register() {
                             </div>
                             <InputError message={errors.bio} className="mt-2" />
                         </div>
+
+                        {/* Student ID */}
+                     <div>
+                        <InputLabel htmlFor="student_id" value="Student ID" />
+                        <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                        {/* You can use an icon here if you want */}
+                        {icons.profile_photo}
+                        </span>
+                         <input
+                            id="student_id"
+                            name="student_id"
+                            type="file"
+                            accept="image/*,.pdf"
+                            className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400 bg-white"
+                            onChange={(e) =>
+                            setData("student_id", e.target.files[0])
+                        }
+                        required
+                     />
+                    </div>
+                <InputError message={errors.student_id} className="mt-2" />
+            </div>
+
 
                         {/* Profile Photo */}
                         <div>

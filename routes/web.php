@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\TutorRegistrationController;
 use App\Http\Controllers\MentorDetailsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\TutorDetailsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -30,10 +31,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/UnitsAddition', [UnitController::class, 'create'])->name('UnitsAddition');
     Route::post('/UnitsAddition', [UnitController::class, 'store'])->name('UnitsAddition.store');
 
-    Route::get('/TutorRegistration',[TutorRegistrationController::class, 'create'])->name('TutorRegistration');
+    Route::get('/TutorRegistration',[TutorDetailsController::class, 'create'])->name('TutorRegistration');
 
     //Mentor Registration
     Route::get('/MentorRegistration', [MentorDetailsController::class, 'create'])->name('MentorRegistration');
+    Route::post('/MentorRegistration', [MentorDetailsController::class, 'store'])->name('MentorRegistration.store');
 
 });
 
