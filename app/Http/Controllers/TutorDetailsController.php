@@ -63,9 +63,11 @@ class TutorDetailsController extends Controller
             ]);
         }
 
-        $user  = Auth::user();
+        $user = User::find(Auth::id());
         $user->is_tutor = true;
         $user->save();
+
+        return redirect()->route('dashboard')->with('success', 'Tutor registration successful. Your details are under review.');
     }
 
     /**
