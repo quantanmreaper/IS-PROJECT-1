@@ -5,6 +5,7 @@ use App\Http\Controllers\MentorDetailsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TutorDetailsController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\TutorDetailsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -40,6 +41,7 @@ Route::middleware('auth')->group(function () {
 
     //Mentor Registration
     Route::get('/MentorRegistration', [MentorDetailsController::class, 'create'])->name('MentorRegistration');
+    Route::post('/MentorRegistration', [MentorDetailsController::class, 'store'])->name('MentorRegistration.store');
 });
 
 

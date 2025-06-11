@@ -1,5 +1,8 @@
 import { Link } from "@inertiajs/react";
 
+
+
+export default function Sidebar({ mobile, closeSidebar , user}) {
 const links = [
     {
         href: route("dashboard"),
@@ -19,26 +22,16 @@ const links = [
             </svg>
         ),
     },
-    {
-        href: route("MentorRegistration"),
-        label: "Become a Mentor",
-        icon: (
-            <svg
-                className="w-6 h-6 text-white"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
-            >
-                <circle cx="12" cy="8" r="4" />
-                <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 20c0-2.21 3.582-4 8-4s8 1.79 8 4"
-                />
-            </svg>
-        ),
-    },
+   ...(!user?.is_mentor ? [{
+            href: route('MentorRegistration'),
+            label: 'Become a Mentor',
+            icon: (
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="8" r="4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 20c0-2.21 3.582-4 8-4s8 1.79 8 4" />
+                </svg>
+            ),
+        }] : []),
     {
         href: route("TutorRegistration"),
         label: "Become a Tutor",
@@ -126,7 +119,7 @@ const links = [
             </svg>
         ),
     },
-
+    
     // Add more links as needed
 ];
 
@@ -163,6 +156,8 @@ export default function Sidebar({ mobile, closeSidebar }) {
                     <Link
                         key={link.href || link.label}
                         href={link.href}
+                        method={link.method || 'get'}
+                        as={link.as || 'a'}
                         className="flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 rounded-lg hover:bg-blue-700 transition"
                     >
                         {link.icon}

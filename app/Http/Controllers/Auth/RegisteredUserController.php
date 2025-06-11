@@ -36,8 +36,9 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email', 'regex:/^[^@]+@strathmore\.edu$/'],
             'password' => ['required', 'string', 'min:8', 'confirmed', Rules\Password::min(8)->letters()->numbers()->symbols()->mixedCase()],
             'bio' => 'nullable|string|max:255',
-            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:5120',
             'student_id' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'gender' => 'required',
             'phone' => 'required',
         ], [
             'email.regex' => 'The Email must be a valid Strathmore university address'
