@@ -17,6 +17,7 @@ class GetTutoredController extends Controller
     public function index()
     {
         $tutors = User::select()->where('is_tutor', true)->get();
+        return Inertia::render('Auth/TutorsList', ['tutors' => $tutors]);
     }
 
     /**

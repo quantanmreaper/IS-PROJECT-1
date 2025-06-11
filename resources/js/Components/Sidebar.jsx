@@ -74,6 +74,7 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
             : []),
         {
             label: "Get Tutored",
+            href: route("GetTutored.index"),
             icon: (
                 <svg
                     className="w-6 h-6 text-white"
