@@ -35,7 +35,7 @@ class RegisteredUserController extends Controller
             'name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email', 'regex:/^[^@]+@strathmore\.edu$/'],
             'password' => ['required', 'string', 'min:8', 'confirmed', Rules\Password::min(8)->letters()->numbers()->symbols()->mixedCase()],
-            'bio' => 'required',
+            'bio' => 'nullable|string|max:255',
             'profile_photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'student_id' => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'phone' => 'required',
@@ -77,6 +77,5 @@ class RegisteredUserController extends Controller
         Auth::login($user);
 
         return redirect(route('login', absolute: false));
-        
     }
 }

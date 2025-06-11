@@ -12,6 +12,8 @@ class TutorDetails extends Model
         'progress_report',
         'approval_status',
         'hourly_rate',
+        'availability_start',
+        'availability_stop',
     ];
 
     public function Tutor()

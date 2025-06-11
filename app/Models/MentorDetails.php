@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class MentorDetails extends Model
 {
     protected $fillable = [
+        'mentor_id',
         'year_of_study',
         'course',
         'skills',
