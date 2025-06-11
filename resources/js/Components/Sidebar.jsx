@@ -73,7 +73,7 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
               ]
             : []),
         {
-            label: "Achievements",
+            label: "Get Tutored",
             icon: (
                 <svg
                     className="w-6 h-6 text-white"
@@ -90,6 +90,7 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
                 </svg>
             ),
         },
+
         {
             href: route("UnitsAddition"),
             label: "Units Addition",
