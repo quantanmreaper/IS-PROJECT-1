@@ -16,7 +16,31 @@ class GetTutoredController extends Controller
      */
     public function index()
     {
-        $tutors = User::select()->where('is_tutor', true)->get();
+        $tutors = User::where('is_tutor', true)
+            ->with([
+                'tutorDetails.units' => function ($query) {
+                    $query->select('units.id', 'name');
+                },
+            ])
+            ->get()
+            ->map(function ($tutor) {
+                $details = $tutor->tutorDetails;
+                // If it's a collection, get the first item
+                if ($details instanceof \Illuminate\Database\Eloquent\Collection) {
+                    $details = $details->first();
+                }
+                return [
+                    'id' => $tutor->id,
+                    'name' => $tutor->name,
+                    'bio' => $tutor->bio ?? '',
+                    'pfp' => $tutor->pfp ?? null,
+                    'hourly_rate' => $details->hourly_rate ?? null,
+                    'units' => $details && $details->units
+                        ? $details->units->pluck('name')->toArray()
+                        : [],
+                ];
+            });
+
         return Inertia::render('Auth/TutorsList', ['tutors' => $tutors]);
     }
 
