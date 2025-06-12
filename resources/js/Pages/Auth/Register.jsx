@@ -66,26 +66,6 @@ export default function Register() {
                 />
             </svg>
         ),
-        // usertype: (
-        //     <svg
-        //         className="w-5 h-5 text-blue-400"
-        //         fill="none"
-        //         stroke="currentColor"
-        //         strokeWidth="2"
-        //         viewBox="0 0 24 24"
-        //     >
-        //         <path
-        //             strokeLinecap="round"
-        //             strokeLinejoin="round"
-        //             d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2a2 2 0 002 2h12a2 2 0 002-2v-2c0-2.66-5.33-4-8-4z"
-        //         />
-        //         <path
-        //             strokeLinecap="round"
-        //             strokeLinejoin="round"
-        //             d="M17 11V7a5 5 0 015 5v2a5 5 0 01-5 5"
-        //         />
-        //     </svg>
-        // ),
         bio: (
             <svg
                 className="w-5 h-5 text-blue-400"
@@ -169,8 +149,11 @@ export default function Register() {
             <Head title="Register" />
             <Navbar />
             <div className="flex flex-col items-center justify-center min-h-[80vh] bg-gradient-to-br from-blue-200 via-white to-blue-400 dark:from-blue-900 dark:via-blue-800 dark:to-blue-700 transition-colors duration-500 py-8">
-                <div className="w-full max-w-lg bg-white/95 dark:bg-blue-900/90 rounded-3xl shadow-2xl p-8 sm:p-12 border-2 border-blue-200 dark:border-blue-800">
-                    <div className="flex flex-col items-center mb-8">
+                <div className="w-full max-w-lg bg-white/95 dark:bg-blue-900/90 rounded-3xl shadow-2xl p-8 sm:p-12 border-2 border-blue-200 dark:border-blue-800 relative overflow-hidden">
+                    {/* Decorative background shapes */}
+                    <div className="absolute -top-10 -left-10 w-40 h-40 bg-blue-100 dark:bg-blue-800 rounded-full opacity-30 blur-2xl z-0"></div>
+                    <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-300 dark:bg-blue-700 rounded-full opacity-20 blur-2xl z-0"></div>
+                    <div className="flex flex-col items-center mb-8 z-10 relative">
                         <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 dark:from-blue-700 dark:to-blue-900 flex items-center justify-center mb-4 shadow-xl">
                             <svg
                                 className="w-10 h-10 text-white"
@@ -196,7 +179,7 @@ export default function Register() {
                     <form
                         onSubmit={submit}
                         encType="multipart/form-data"
-                        className="space-y-5"
+                        className="space-y-5 z-10 relative"
                     >
                         {/* Name */}
                         <div>
@@ -209,7 +192,7 @@ export default function Register() {
                                     id="name"
                                     name="name"
                                     value={data.name}
-                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
+                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400 bg-white/80 dark:bg-blue-950/60"
                                     autoComplete="name"
                                     isFocused={true}
                                     onChange={(e) =>
@@ -223,7 +206,6 @@ export default function Register() {
                                 className="mt-2"
                             />
                         </div>
-
                         {/* Email */}
                         <div>
                             <InputLabel htmlFor="email" value="Email" />
@@ -236,7 +218,7 @@ export default function Register() {
                                     type="email"
                                     name="email"
                                     value={data.email}
-                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
+                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400 bg-white/80 dark:bg-blue-950/60"
                                     autoComplete="username"
                                     onChange={(e) =>
                                         setData("email", e.target.value)
@@ -249,62 +231,60 @@ export default function Register() {
                                 className="mt-2"
                             />
                         </div>
-
                         {/* Gender */}
-                            <div>
-                                <InputLabel htmlFor="gender" value="Gender" />
-                                <div className="relative">
-                                    <span className="absolute left-3 top-1/2 -translate-y-1/2">
-                                        {/* Optionally add an icon here */}
-                                    </span>
-                                    <select
-                                        id="gender"
-                                        name="gender"
-                                        value={data.gender}
-                                        onChange={e => setData("gender", e.target.value)}
-                                        className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
-                                        required
-                                    >
-                                        <option value="" disabled>Select gender</option>
-                                        <option value="m">Male</option>
-                                        <option value="f">Female</option>
-                                    </select>
-                                </div>
-                                <InputError message={errors.gender} className="mt-2" />
-                            </div>
-
-                        {/* User Type */}
-                        {/* <div>
-                            <InputLabel htmlFor="usertype" value="User Type" />
+                        <div>
+                            <InputLabel htmlFor="gender" value="Gender" />
                             <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
-                                    {icons.usertype}
-                                </span>
                                 <select
-                                    id="usertype"
-                                    name="usertype"
-                                    value={data.usertype}
+                                    id="gender"
+                                    name="gender"
+                                    value={data.gender}
                                     onChange={(e) =>
-                                        setData("usertype", e.target.value)
+                                        setData("gender", e.target.value)
                                     }
-                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
+                                    className="mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400 bg-white/80 dark:bg-blue-950/60 pl-3 pr-8 py-2"
                                     required
                                 >
                                     <option value="" disabled>
-                                        Select user type
+                                        Select gender
                                     </option>
-                                    <option value="standard user">
-                                        Standard User
-                                    </option>
-                                    <option value="admin">Admin</option>
+                                    <option value="m">Male</option>
+                                    <option value="f">Female</option>
                                 </select>
                             </div>
                             <InputError
-                                message={errors.usertype}
+                                message={errors.gender}
                                 className="mt-2"
                             />
-                        </div> */}
-
+                        </div>
+                        {/* Phone */}
+                        <div>
+                            <InputLabel
+                                htmlFor="phone"
+                                value="Phone Number"
+                            />
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                                    {icons.phone}
+                                </span>
+                                <TextInput
+                                    id="phone"
+                                    name="phone"
+                                    type="tel"
+                                    value={data.phone}
+                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400 bg-white/80 dark:bg-blue-950/60"
+                                    autoComplete="tel"
+                                    onChange={(e) =>
+                                        setData("phone", e.target.value)
+                                    }
+                                    placeholder="e.g. 07123456789"
+                                />
+                            </div>
+                            <InputError
+                                message={errors.phone}
+                                className="mt-2"
+                            />
+                        </div>
                         {/* Bio */}
                         <div>
                             <InputLabel htmlFor="bio" value="Bio" />
@@ -319,38 +299,43 @@ export default function Register() {
                                     onChange={(e) =>
                                         setData("bio", e.target.value)
                                     }
-                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
+                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400 bg-white/80 dark:bg-blue-950/60"
                                     rows={3}
                                     placeholder="Tell us about yourself..."
                                 />
                             </div>
                             <InputError message={errors.bio} className="mt-2" />
                         </div>
-
                         {/* Student ID */}
-                     <div>
-                        <InputLabel htmlFor="student_id" value="Student ID" />
-                        <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2">
-                        {/* You can use an icon here if you want */}
-                        {icons.profile_photo}
-                        </span>
-                         <input
-                            id="student_id"
-                            name="student_id"
-                            type="file"
-                            accept="image/*,.pdf"
-                            className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400 bg-white"
-                            onChange={(e) =>
-                            setData("student_id", e.target.files[0])
-                        }
-                        required
-                     />
-                    </div>
-                <InputError message={errors.student_id} className="mt-2" />
-            </div>
-
-
+                        <div>
+                            <InputLabel
+                                htmlFor="student_id"
+                                value="Student ID"
+                            />
+                            <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
+                                    {icons.profile_photo}
+                                </span>
+                                <input
+                                    id="student_id"
+                                    name="student_id"
+                                    type="file"
+                                    accept="image/*,.pdf"
+                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400 bg-white"
+                                    onChange={(e) =>
+                                        setData(
+                                            "student_id",
+                                            e.target.files[0]
+                                        )
+                                    }
+                                    required
+                                />
+                            </div>
+                            <InputError
+                                message={errors.student_id}
+                                className="mt-2"
+                            />
+                        </div>
                         {/* Profile Photo */}
                         <div>
                             <InputLabel
@@ -380,36 +365,12 @@ export default function Register() {
                                 className="mt-2"
                             />
                         </div>
-
-                        {/* Phone Number */}
-                        <div>
-                            <InputLabel htmlFor="phone" value="Phone Number" />
-                            <div className="relative">
-                                <span className="absolute left-3 top-1/2 -translate-y-1/2">
-                                    {icons.phone}
-                                </span>
-                                <TextInput
-                                    id="phone"
-                                    name="phone"
-                                    type="tel"
-                                    value={data.phone}
-                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
-                                    autoComplete="tel"
-                                    onChange={(e) =>
-                                        setData("phone", e.target.value)
-                                    }
-                                    placeholder="e.g. 07123456789"
-                                />
-                            </div>
-                            <InputError
-                                message={errors.phone}
-                                className="mt-2"
-                            />
-                        </div>
-
                         {/* Password */}
                         <div>
-                            <InputLabel htmlFor="password" value="Password" />
+                            <InputLabel
+                                htmlFor="password"
+                                value="Password"
+                            />
                             <div className="relative">
                                 <span className="absolute left-3 top-1/2 -translate-y-1/2">
                                     {icons.password}
@@ -419,7 +380,7 @@ export default function Register() {
                                     type="password"
                                     name="password"
                                     value={data.password}
-                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
+                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400 bg-white/80 dark:bg-blue-950/60"
                                     autoComplete="new-password"
                                     onChange={(e) =>
                                         setData("password", e.target.value)
@@ -432,7 +393,6 @@ export default function Register() {
                                 className="mt-2"
                             />
                         </div>
-
                         {/* Confirm Password */}
                         <div>
                             <InputLabel
@@ -448,7 +408,7 @@ export default function Register() {
                                     type="password"
                                     name="password_confirmation"
                                     value={data.password_confirmation}
-                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400"
+                                    className="pl-10 mt-1 block w-full rounded-lg border-blue-300 focus:border-blue-500 focus:ring-blue-400 bg-white/80 dark:bg-blue-950/60"
                                     autoComplete="new-password"
                                     onChange={(e) =>
                                         setData(
@@ -464,16 +424,15 @@ export default function Register() {
                                 className="mt-2"
                             />
                         </div>
-
-                        <div className="flex items-center justify-between mt-6">
+                        <div className="flex items-center justify-between mt-8">
                             <Link
                                 href={route("login")}
-                                className="text-blue-600 hover:underline font-semibold dark:text-blue-200"
+                                className="text-blue-600 hover:underline font-semibold dark:text-blue-200 transition-colors duration-200"
                             >
-                                LogIn
+                                Log In
                             </Link>
                             <PrimaryButton
-                                className="ms-4 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-2 px-6 rounded-xl shadow-lg transition-all duration-200"
+                                className="ms-4 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-bold py-2 px-8 rounded-xl shadow-lg transition-all duration-200 text-lg"
                                 disabled={processing}
                             >
                                 Register

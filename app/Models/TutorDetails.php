@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 
 class TutorDetails extends Model
 {
+    use HasFactory;
     protected $fillable = [
         'tutor_id',
         'progress_report',
