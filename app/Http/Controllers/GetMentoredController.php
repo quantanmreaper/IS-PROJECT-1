@@ -31,7 +31,7 @@ class GetMentoredController extends Controller
                 ];
             });
 
-        return Inertia::render('Auth/MentorsList', ['mentors' => $mentors]);
+        return Inertia::render('Auth/MentorList', ['mentors' => $mentors]);
     }
 
     /**
