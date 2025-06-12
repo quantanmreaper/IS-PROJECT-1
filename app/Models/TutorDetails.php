@@ -23,6 +23,7 @@ class TutorDetails extends Model
 
     public function units()
     {
+        // Use tutor_id as the foreign key in the pivot table
         return $this->belongsToMany(Unit::class, 'tutor_units', 'tutor_id', 'unit_id');
     }
 }

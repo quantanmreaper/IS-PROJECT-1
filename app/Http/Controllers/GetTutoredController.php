@@ -17,11 +17,7 @@ class GetTutoredController extends Controller
     public function index()
     {
         $tutors = User::where('is_tutor', true)
-            ->with([
-                'tutorDetails.units' => function ($query) {
-                    $query->select('units.id', 'name');
-                },
-            ])
+            ->with(['tutorDetails', 'units'])
             ->get()
             ->map(function ($tutor) {
                 $details = $tutor->tutorDetails;
@@ -35,9 +31,7 @@ class GetTutoredController extends Controller
                     'bio' => $tutor->bio ?? '',
                     'pfp' => $tutor->pfp ?? null,
                     'hourly_rate' => $details->hourly_rate ?? null,
-                    'units' => $details && $details->units
-                        ? $details->units->pluck('name')->toArray()
-                        : [],
+                    'units' => $tutor->units->pluck('name')->toArray(),
                 ];
             });
 

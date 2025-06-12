@@ -39,8 +39,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function units()
     {
         return $this->belongsToMany(Unit::class, 'tutor_units', 'tutor_id', 'unit_id')
-            ->withPivot('proficiency_level', 'is_tutor')
-            ->wherePivot('is_tutor', true);
+            ->withPivot('proficiency_level');
     }
 
     public function tutorTutingSessions()

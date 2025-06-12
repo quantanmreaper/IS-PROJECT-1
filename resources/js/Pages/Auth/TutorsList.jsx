@@ -37,7 +37,7 @@ export default function TutorsList({ tutors }) {
                                         key={idx}
                                         className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
                                     >
-                                        {unit.name}
+                                        {unit}
                                     </span>
                                 ))}
                             </div>

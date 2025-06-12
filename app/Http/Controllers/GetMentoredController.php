@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+
 
 class GetMentoredController extends Controller
 {
@@ -12,7 +14,24 @@ class GetMentoredController extends Controller
      */
     public function index()
     {
-        $mentors = User::select()->where('is_mentor', true)->get();
+        $mentors = User::where('is_mentor', true)
+            ->with(['mentorDetails'])
+            ->get()
+            ->map(function ($mentor) {
+                $details = $mentor->mentorDetails;
+                if ($details instanceof \Illuminate\Database\Eloquent\Collection) {
+                    $details = $details->first();
+                }
+                return [
+                    'id' => $mentor->id,
+                    'name' => $mentor->name,
+                    'bio' => $mentor->bio ?? '',
+                    'pfp' => $mentor->pfp ?? null,
+                    // Add more mentor-specific fields as needed
+                ];
+            });
+
+        return Inertia::render('Auth/MentorsList', ['mentors' => $mentors]);
     }
 
     /**
