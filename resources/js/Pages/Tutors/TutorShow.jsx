@@ -72,7 +72,7 @@ export default function TutorShow({ tutor }) {
                         </div>
                         <div className="flex justify-center mt-8">
                             <a
-                                href={route("getTutored.show", tutor.id)}
+                                href={route("bookTutor.create", tutor.id)}
                                 className="inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold shadow-lg transition-all duration-200 text-lg"
                             >
                                 Book a Session

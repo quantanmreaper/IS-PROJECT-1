@@ -5,6 +5,7 @@ use App\Http\Controllers\GetTutoredController;
 use App\Http\Controllers\GetMentoredController;
 use App\Http\Controllers\MentorDetailsController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TutorBookingController;
 use App\Http\Controllers\TutorDetailsController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Foundation\Application;
@@ -44,6 +45,17 @@ Route::resource('units', UnitController::class)
     ->middleware(['auth', 'verified'])
     ->parameters(['units' => 'unit'])
     ->names('units');
+
+// Custom route for booking a tutor session (create form)
+Route::get('bookTutor/create/{tutor}', [TutorBookingController::class, 'create'])
+    ->middleware(['auth', 'verified'])
+    ->name('bookTutor.create');
+
+Route::resource('bookTutor', TutorBookingController::class)
+    ->middleware(['auth', 'verified'])
+    ->parameters(['bookTutor' => 'tutor'])
+    ->names('bookTutor')
+    ->except(['create']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
