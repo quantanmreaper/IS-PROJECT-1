@@ -35,7 +35,7 @@ class GetTutoredController extends Controller
                 ];
             });
 
-        return Inertia::render('Auth/TutorsList', ['tutors' => $tutors]);
+        return Inertia::render('Tutors/TutorsList', ['tutors' => $tutors]);
     }
 
     /**

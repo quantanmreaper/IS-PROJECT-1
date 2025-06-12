@@ -47,7 +47,7 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
         ...(!user?.is_tutor
             ? [
                   {
-                      href: route("TutorRegistration.create"),
+                      href: route("tutorRegistration.create"),
                       label: "Become a Tutor",
                       icon: (
                           <svg
@@ -74,7 +74,7 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
             : []),
         {
             label: "Get Tutored",
-            href: route("GetTutored.index"),
+            href: route("getTutored.index"),
             icon: (
                 <svg
                     className="w-6 h-6 text-white"
@@ -94,6 +94,7 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
 
         {
             label: "Get Mentored",
+            href: route("getMentored.index"),
             icon: (
                 <svg
                     className="w-6 h-6 text-white"
@@ -112,8 +113,8 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
         },
 
         {
-            href: route("UnitsAddition"),
-            label: "Units Addition",
+            href: route("units.index"),
+            label: "Units",
             icon: (
                 <svg
                     className="w-5 h-5 text-white-500"

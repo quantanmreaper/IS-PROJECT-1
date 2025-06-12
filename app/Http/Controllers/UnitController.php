@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Unit;
+
 class UnitController extends Controller
 {
     /**
@@ -12,14 +13,16 @@ class UnitController extends Controller
      */
     public function index()
     {
-        //return view('units.index');
+        $units = Unit::all();
+        return Inertia::render('Units/Index', ['units' => $units]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create() {
-        return Inertia::render('Auth/UnitsAddition');
+    public function create()
+    {
+        return Inertia::render('Units/UnitsAddition');
     }
 
     /**
@@ -33,13 +36,12 @@ class UnitController extends Controller
             'description' => 'required',
         ]);
 
-        $units = Unit::create([
+        Unit::create([
             'name' => $request->name,
             'description' => $request->description,
         ]);
 
-        return redirect()->route('dashboard')->with('success', '🎉 Your unit has been registered! Thank you for contributing.');
-
+        return redirect()->route('units.index')->with('success', '🎉 New Unit Has Been Added For Tutors.');
     }
 
     /**

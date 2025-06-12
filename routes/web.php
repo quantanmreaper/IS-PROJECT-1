@@ -25,30 +25,30 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', ['user' => Auth::user(),]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::resource('TutorRegistration', TutorDetailsController::class)
+Route::resource('tutorRegistration', TutorDetailsController::class)
     ->middleware(['auth', 'verified'])
-    ->parameters(['TutorRegistration' => 'tutor'])
-    ->names('TutorRegistration');
+    ->parameters(['tutorRegistration' => 'tutor'])
+    ->names('tutorRegistration');
 
-Route::resource('GetTutored', GetTutoredController::class)
+Route::resource('getTutored', GetTutoredController::class)
     ->middleware(['auth', 'verified'])
-    ->parameters(['GetTutored' => 'tutor'])
-    ->names('GetTutored');
+    ->parameters(['getTutored' => 'tutor'])
+    ->names('getTutored');
 
-Route::resource('GetMentored', GetMentoredController::class)
+Route::resource('getMentored', GetMentoredController::class)
     ->middleware(['auth', 'verified'])
-    ->parameters(['GetMentored' => 'mentor'])
-    ->names('GetMentored');
+    ->parameters(['getMentored' => 'mentor'])
+    ->names('getMentored');
+
+Route::resource('units', UnitController::class)
+    ->middleware(['auth', 'verified'])
+    ->parameters(['units' => 'unit'])
+    ->names('units');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::get('/UnitsAddition', [UnitController::class, 'create'])->name('UnitsAddition');
-    Route::post('/UnitsAddition', [UnitController::class, 'store'])->name('UnitsAddition.store');
-
-    //Route::get('/TutorRegistration', [TutorRegistrationController::class, 'create'])->name('TutorRegistration');
 
     //Mentor Registration
     Route::get('/MentorRegistration', [MentorDetailsController::class, 'create'])->name('MentorRegistration');

@@ -27,7 +27,7 @@ class TutorDetailsController extends Controller
     public function create()
     {
         $units = Unit::select('id', 'name')->get();
-        return Inertia::render('Auth/TutorRegistration', ['units' => $units]);
+        return Inertia::render('Tutors/TutorRegistration', ['units' => $units]);
     }
 
     /**
