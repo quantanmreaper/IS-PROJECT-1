@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;        
-use Illuminate\Http\Request;  
-use Inertia\Inertia;  
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\MentorDetails;
 use Illuminate\Http\RedirectResponse;
 //use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class MentorDetailsController extends Controller
 {
@@ -26,8 +27,8 @@ class MentorDetailsController extends Controller
      */
     public function create(): Response
     {
-        
-        return Inertia::render('Auth/MentorRegistration');
+
+        return Inertia::render('Mentors/MentorRegistration');
     }
 
     /**
@@ -36,25 +37,25 @@ class MentorDetailsController extends Controller
     public function store(Request $request)
     {
         //
-         $validated = $request->validate([
-        'year_of_study' => 'required|integer',
-        'course' => 'required|string|max:255',
-        'skills' => 'nullable|string|max:255',
-        'hobbies' => 'nullable|string|max:255',
-        'work_experience' => 'nullable|string|max:255',
-    ]);
+        $validated = $request->validate([
+            'year_of_study' => 'required|integer',
+            'course' => 'required|string|max:255',
+            'skills' => 'nullable|string|max:255',
+            'hobbies' => 'nullable|string|max:255',
+            'work_experience' => 'nullable|string|max:255',
+        ]);
 
-    //mentor id is the current user id
-    $validated['mentor_id'] = Auth::id();
+        //mentor id is the current user id
+        $validated['mentor_id'] = Auth::id();
+        $user = Auth::user();
+        if ($user instanceof \App\Models\User) {
+            $user->is_mentor = true;
+            $user->save();
+        }
 
-    $user = Auth::user();
-    $user->is_mentor = true;
-    $user->save();
 
-
-    MentorDetails::create($validated);
-    return redirect()->route('dashboard')->with('success', 'Mentor details submitted successfully.');
-
+        MentorDetails::create($validated);
+        return redirect()->route('dashboard')->with('success', 'Mentor details submitted successfully.');
     }
 
     /**

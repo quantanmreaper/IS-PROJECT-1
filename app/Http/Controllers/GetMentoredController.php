@@ -25,13 +25,12 @@ class GetMentoredController extends Controller
                 return [
                     'id' => $mentor->id,
                     'name' => $mentor->name,
-                    'bio' => $mentor->bio ?? '',
                     'pfp' => $mentor->pfp ?? null,
-                    // Add more mentor-specific fields as needed
+                    'year_of_study' => $details->year_of_study,
                 ];
             });
 
-        return Inertia::render('Auth/MentorList', ['mentors' => $mentors]);
+        return Inertia::render('Mentors/MentorList', ['mentors' => $mentors]);
     }
 
     /**
@@ -55,7 +54,28 @@ class GetMentoredController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $mentor = User::where('is_mentor', true)
+            ->with(['mentorDetails'])
+            ->findOrFail($id);
+
+        $details = $mentor->mentorDetails;
+        if ($details instanceof \Illuminate\Database\Eloquent\Collection) {
+            $details = $details->first();
+        }
+
+        $mentorData = [
+            'id' => $mentor->id,
+            'name' => $mentor->name,
+            'bio' => $mentor->bio ?? '',
+            'pfp' => $mentor->pfp ?? null,
+            'year_of_study' => $details->year_of_study ?? null,
+            'course' => $details->course,
+            'skills' => $details->skills,
+            'hobbies' => $details->hobbies,
+            'work_experience' => $details->work_experience,
+        ];
+
+        return Inertia::render('Mentors/MentorShow', ['mentor' => $mentorData]);
     }
 
     /**
