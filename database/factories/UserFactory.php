@@ -32,6 +32,7 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
             'user_type' => $this->faker->randomElement(['standard user', 'admin']),
             'is_tutor' => $this->faker->boolean(30),
+            'is_mentor' => $this->faker->boolean(30),
             'bio' => $this->faker->text(200),
             'pfp' => 'defaultpfp.png',
             'student_id' => 'defaultStudentId.pdf',

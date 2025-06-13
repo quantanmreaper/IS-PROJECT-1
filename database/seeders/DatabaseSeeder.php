@@ -8,6 +8,8 @@ use App\Models\TutorUnit;
 use App\Models\User;
 use App\Models\Unit;
 use App\Models\Message;
+use App\Models\TutorDetails;
+use App\Models\MentorDetails;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -24,5 +26,7 @@ class DatabaseSeeder extends Seeder
         TutingSession::factory()->count(100)->create();
         Review::factory()->count(100)->create();
         Message::factory()->count(500)->create();
+        TutorDetails::factory()->count(10)->create();
+        MentorDetails::factory()->count(10)->create();
     }
 }
