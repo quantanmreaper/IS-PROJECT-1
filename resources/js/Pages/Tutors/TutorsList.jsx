@@ -39,27 +39,24 @@ export default function TutorsList({ tutors }) {
                                             Hourly Rate: Ksh {tutor.hourly_rate ?? "N/A"}
                                         </div>
                                        <div className="flex flex-wrap gap-2 justify-center">
-    {tutor.units.map((unit, idx) => (
-        <span
-            key={idx}
-            className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
-        >
-            {unit}
-        </span>
-    ))}
-</div>
-<button
-    className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow transition"
-    onClick={() => {
-        // Replace with your booking logic or navigation
-        alert(`Book session with ${tutor.name}`);
-    }}
->
-    Book Session
-</button>
-                                        
-
-
+                                            {tutor.units.map((unit, idx) => (
+                                                <span
+                                                    key={idx}
+                                                    className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"
+                                                >
+                                                    {unit}
+                                                </span>
+                                            ))}
+                                        </div>
+                                        <button
+                                            className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold shadow transition"
+                                            onClick={() => {
+                                                // Replace with your booking logic or navigation
+                                                alert(`Book session with ${tutor.name}`);
+                                            }}
+                                        >
+                                            Book Session
+                                        </button>
                                     </div>
                                 ))}
                             </div>
