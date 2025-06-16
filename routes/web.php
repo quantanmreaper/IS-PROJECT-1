@@ -47,16 +47,25 @@ Route::resource('units', UnitController::class)
     ->parameters(['units' => 'unit'])
     ->names('units');
 
-// Custom route for booking a tutor session (create form)
-Route::get('bookTutor/create/{tutor}', [TutorBookingController::class, 'create'])
-    ->middleware(['auth', 'verified'])
-    ->name('bookTutor.create');
+// Group all custom and resource routes for TutorBookingController under a prefix and shared middleware
+Route::prefix('bookTutor')->middleware(['auth', 'verified'])->group(function () {
+    // Custom route for booking a tutor session (create form)
+    Route::get('create/{tutor}', [TutorBookingController::class, 'create'])
+        ->name('bookTutor.create');
 
-Route::resource('bookTutor', TutorBookingController::class)
-    ->middleware(['auth', 'verified'])
-    ->parameters(['bookTutor' => 'tutor'])
-    ->names('bookTutor')
-    ->except(['create']);
+    // Custom POST route for booking a tutor session (store)
+    Route::post('{tutor}', [TutorBookingController::class, 'store'])
+        ->name('bookTutor.store');
+
+    // Custom route for viewing booked sessions
+    Route::get('booked/{tutor}', [TutorBookingController::class, 'index'])
+        ->name('bookTutor.index');
+
+    Route::resource('/', TutorBookingController::class)
+        ->parameters(['' => 'tutor'])
+        ->names('bookTutor')
+        ->except(['create', 'store', 'index']);
+});
 
 Route::resource('tutionRequests', TutionRequestsController::class)
     ->middleware(['auth', 'verified'])

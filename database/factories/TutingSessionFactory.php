@@ -25,6 +25,8 @@ class TutingSessionFactory extends Factory
             'unit_id' => Unit::inRandomOrder()->first()?->id,
             'scheduled_start' => $start = Carbon::now()->addDays(rand(1, 10))->setTime(rand(8, 16), 0),
             'scheduled_stop' => (clone $start)->addHours(1),
+            'acceptance' => $this->faker->boolean(60),
+            'notes' => $this->faker->optional()->text(200),
             'actual_start' => (clone $start)->addMinutes(rand(-5, 5)),
             'actual_stop' => (clone $start)->addMinutes(60 + rand(-5, 15)),
         ];

@@ -30,37 +30,7 @@ export default function Booked({ tutor }) {
                                 has been successfully booked.
                             </p>
                         </div>
-                        <div className="mb-6">
-                            <h2 className="text-xl font-bold text-green-800 mb-3">
-                                Tutor Details
-                            </h2>
-                            <div className="flex flex-wrap gap-2">
-                                {tutor.units && tutor.units.length > 0 ? (
-                                    tutor.units.map((unit, idx) => (
-                                        <span
-                                            key={idx}
-                                            className="bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-xs font-medium shadow-sm"
-                                        >
-                                            {typeof unit === "string"
-                                                ? unit
-                                                : unit.name}
-                                        </span>
-                                    ))
-                                ) : (
-                                    <span className="text-gray-500">
-                                        No units listed.
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-                        <div className="mb-6">
-                            <h2 className="text-xl font-bold text-green-800 mb-3">
-                                Hourly Rate
-                            </h2>
-                            <span className="inline-block bg-blue-100 text-blue-700 px-4 py-1 rounded-full text-sm font-semibold">
-                                Ksh {tutor.hourly_rate ?? "N/A"}
-                            </span>
-                        </div>
+
                         <div className="flex justify-center mt-8">
                             <a
                                 href={route("dashboard")}

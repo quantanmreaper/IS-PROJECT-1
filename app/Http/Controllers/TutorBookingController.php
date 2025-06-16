@@ -40,19 +40,20 @@ class TutorBookingController extends Controller
     public function store(Request $request, $tutorId)
     {
         $request->validate([
-            'unit' => 'required|exists:units,id',
+            'unit_id' => 'required|exists:units,id',
             'session_datetime' => 'required|date',
             'duration' => 'required|integer|min:1|max:6',
             'notes' => 'nullable|string|max:500',
         ]);
 
         $tutor = User::findOrFail($tutorId);
+        $duration = (int) $request->input('duration');
         $session = TutingSession::create([
             'tutee_id' => Auth::user()->id,
             'tutor_id' => $tutorId,
-            'unit_id' => $request->input('unit'),
+            'unit_id' => $request->input('unit_id'),
             'scheduled_start' => $request->input('session_datetime'),
-            'scheduled_stop' => \Carbon\Carbon::parse($request->input('session_datetime'))->addHours($request->input('duration')),
+            'scheduled_stop' => \Carbon\Carbon::parse($request->input('session_datetime'))->addHours($duration),
             'notes' => $request->input('notes', ''),
         ]);
 
