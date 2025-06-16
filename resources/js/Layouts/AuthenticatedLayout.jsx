@@ -12,6 +12,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const { flash } = usePage().props;
     const user = usePage().props.auth.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(user.unread_message_count || 0);
 
     useEffect(() => {
         if (flash && flash.success) {
@@ -20,13 +21,30 @@ export default function AuthenticatedLayout({ header, children }) {
         if (flash && flash.error) {
             toastr.error(flash.error);
         }
-    }, [flash]);
+
+        // Listen for new messages
+        if (window.Echo) {
+            const channel = window.Echo.private(`chat.${user.id}`);
+            
+            channel.listen('.MessageSent', (data) => {
+                // Update unread count
+                setUnreadCount(prev => prev + 1);
+                
+                // Show notification
+                toastr.info(`New message from ${data.user.name}`);
+            });
+            
+            return () => {
+                channel.stopListening('.MessageSent');
+            };
+        }
+    }, []);
 
     return (
         <div className="flex min-h-screen bg-gray-100">
             {/* Desktop sidebar */}
             <div className="hidden md:block">
-                <Sidebar user={user} />
+                <Sidebar user={{...user, unread_message_count: unreadCount}} />
             </div>
 
             {/* Mobile sidebar */}
@@ -35,7 +53,7 @@ export default function AuthenticatedLayout({ header, children }) {
                     {/* Sidebar */}
                     <div className="fixed inset-y-0 left-0 w-64 z-50">
                         <Sidebar
-                            user={user}
+                            user={{...user, unread_message_count: unreadCount}}
                             mobile={true}
                             closeSidebar={() => setSidebarOpen(false)}
                         />

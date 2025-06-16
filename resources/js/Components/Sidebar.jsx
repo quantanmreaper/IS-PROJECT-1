@@ -113,6 +113,33 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
         },
 
         {
+            href: route("chats.conversations"),
+            label: "Messages",
+            icon: (
+                <div className="relative">
+                    <svg
+                        className="w-6 h-6 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                        />
+                    </svg>
+                    {user?.unread_message_count > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            {user?.unread_message_count > 9 ? '9+' : user?.unread_message_count}
+                        </span>
+                    )}
+                </div>
+            ),
+        },
+
+        {
             href: route("units.index"),
             label: "Units",
             icon: (
@@ -217,6 +244,9 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
                         method={link.method || "get"}
                         as={link.as || "a"}
                         className="flex items-center gap-3 px-3 md:px-4 py-2 md:py-3 rounded-lg hover:bg-blue-700 transition"
+                        {...(link.method === "post" && link.href === route("logout")
+                            ? { onSuccess: () => window.location.reload() }
+                            : {})}
                     >
                         {link.icon}
                         <span>{link.label}</span>

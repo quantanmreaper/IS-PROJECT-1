@@ -22,7 +22,7 @@ export default function TutorRegistration({ units }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route("TutorRegistration.store"), {
+        post(route("tutorRegistration.store"), {
             forceFormData: true,
             onSuccess: () => reset(),
         });
