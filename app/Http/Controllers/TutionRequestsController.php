@@ -90,11 +90,11 @@ class TutionRequestsController extends Controller
             'accepted' => 'required|boolean',
         ]);
 
-        $tutingSession->accepted = $request->input('accepted');
+        $tutingSession->acceptance = $request->input('accepted');
         $tutingSession->save();
 
         // Send email to tutee if accepted
-        if ($tutingSession->accepted) {
+        if ($tutingSession->acceptance) {
             $tutee = $tutingSession->tutee;
             $tutor = $tutingSession->tutor;
             $session = $tutingSession->load('unit');
