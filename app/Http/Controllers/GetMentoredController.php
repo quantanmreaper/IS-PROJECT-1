@@ -26,7 +26,7 @@ class GetMentoredController extends Controller
                     'id' => $mentor->id,
                     'name' => $mentor->name,
                     'pfp' => $mentor->pfp ?? null,
-                    'year_of_study' => $details->year_of_study,
+                    'year_of_study' => $details?->year_of_study ?? 'N/A',
                 ];
             });
 

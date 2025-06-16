@@ -1,6 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
 import { useEffect, useState } from "react";
+import DataTable from "react-data-table-component";
 
 export default function UnitsAddition({
     units: initialUnits,
@@ -36,6 +37,28 @@ export default function UnitsAddition({
         });
     };
 
+    const columns = [
+        {
+            name: "#",
+            selector: (row, idx) => (page - 1) * 10 + idx + 1,
+            width: "60px",
+        },
+        {
+            name: "Unit Name",
+            selector: (row) => row.name,
+            sortable: true,
+        },
+        {
+            name: "Description",
+            selector: (row) =>
+                row.description?.length > 60
+                    ? row.description.slice(0, 60) + "..."
+                    : row.description,
+            sortable: false,
+            wrap: true,
+        },
+    ];
+
     return (
         <AuthenticatedLayout
             header={
@@ -69,78 +92,20 @@ export default function UnitsAddition({
             <div className="py-12 bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen">
                 <div className="mx-auto max-w-6xl sm:px-6 lg:px-8">
                     <div className="bg-white/90 p-8 shadow-xl rounded-2xl border border-blue-100">
-                        <table className="min-w-full divide-y divide-blue-200 rounded-lg overflow-hidden">
-                            <thead className="bg-blue-100">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">
-                                        #
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">
-                                        Unit Name
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-bold text-blue-700 uppercase tracking-wider">
-                                        Description
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-blue-100">
-                                {units && units.length > 0 ? (
-                                    units.map((unit, idx) => (
-                                        <tr
-                                            key={unit.id}
-                                            className="hover:bg-blue-50 transition"
-                                        >
-                                            <td className="px-6 py-4 whitespace-nowrap text-gray-700 font-medium">
-                                                {(page - 1) * 10 + idx + 1}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-blue-800 font-semibold">
-                                                {unit.name}
-                                            </td>
-                                            <td
-                                                className="px-6 py-4 whitespace-nowrap text-gray-600 max-w-xs overflow-hidden text-ellipsis"
-                                                style={{ maxWidth: "250px" }}
-                                            >
-                                                {unit.description &&
-                                                unit.description.length > 60
-                                                    ? unit.description.slice(
-                                                          0,
-                                                          60
-                                                      ) + "..."
-                                                    : unit.description}
-                                            </td>
-                                        </tr>
-                                    ))
-                                ) : (
-                                    <tr>
-                                        <td
-                                            colSpan="3"
-                                            className="px-6 py-4 text-center text-gray-500"
-                                        >
-                                            No units found.
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                        {/* Pagination Controls */}
-                        <div className="flex justify-center mt-6 space-x-2">
-                            {Array.from(
-                                { length: lastPage },
-                                (_, i) => i + 1
-                            ).map((pg) => (
-                                <button
-                                    key={pg}
-                                    onClick={() => handlePageChange(pg)}
-                                    className={`px-3 py-1 rounded-lg font-semibold border transition-all duration-150 ${
-                                        pg === page
-                                            ? "bg-blue-600 text-white border-blue-600 shadow"
-                                            : "bg-white text-blue-700 border-blue-200 hover:bg-blue-50"
-                                    }`}
-                                >
-                                    {pg}
-                                </button>
-                            ))}
-                        </div>
+                        <DataTable
+                            columns={columns}
+                            data={units}
+                            pagination
+                            highlightOnHover
+                            striped
+                            noDataComponent={
+                                <div className="text-gray-500 py-8">
+                                    No units found.
+                                </div>
+                            }
+                        />
+                        {/* Pagination Controls (optional, if you want to keep custom pagination) */}
+                        {/* ...existing code for pagination if needed... */}
                     </div>
                 </div>
             </div>

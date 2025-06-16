@@ -6,8 +6,8 @@ import React from "react";
 export default function TutorBookingCreate({ tutor, units }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         unit_id: "",
-        session_date: "",
-        session_time: "",
+        session_datetime: "",
+        duration: "1",
         notes: "",
     });
 
@@ -62,8 +62,8 @@ export default function TutorBookingCreate({ tutor, units }) {
                                 Book a Tutoring Session
                             </h1>
                             <p className="text-gray-600">
-                                Select a unit, date, and time to book your
-                                session with this tutor.
+                                Select a unit and date/time to book your session
+                                with this tutor.
                             </p>
                         </div>
                         <form
@@ -95,41 +95,46 @@ export default function TutorBookingCreate({ tutor, units }) {
                                     </div>
                                 )}
                             </div>
-                            {/* Date */}
+                            {/* DateTime */}
                             <div>
                                 <label className="block mb-1 font-semibold text-blue-700">
-                                    Session Date
+                                    Session Date & Time
                                 </label>
                                 <input
-                                    type="date"
-                                    name="session_date"
-                                    value={data.session_date}
+                                    type="datetime-local"
+                                    name="session_datetime"
+                                    value={data.session_datetime}
                                     onChange={handleChange}
                                     className="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition bg-white"
                                     required
                                 />
-                                {errors.session_date && (
+                                {errors.session_datetime && (
                                     <div className="text-red-500 text-sm mt-1">
-                                        {errors.session_date}
+                                        {errors.session_datetime}
                                     </div>
                                 )}
                             </div>
-                            {/* Time */}
+                            {/* Duration */}
                             <div>
                                 <label className="block mb-1 font-semibold text-blue-700">
-                                    Session Time
+                                    Duration (hours)
                                 </label>
-                                <input
-                                    type="time"
-                                    name="session_time"
-                                    value={data.session_time}
+                                <select
+                                    name="duration"
+                                    value={data.duration}
                                     onChange={handleChange}
                                     className="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition bg-white"
                                     required
-                                />
-                                {errors.session_time && (
+                                >
+                                    {[1, 2, 3, 4, 5].map((hour) => (
+                                        <option key={hour} value={hour}>
+                                            {hour} hour{hour > 1 ? "s" : ""}
+                                        </option>
+                                    ))}
+                                </select>
+                                {errors.duration && (
                                     <div className="text-red-500 text-sm mt-1">
-                                        {errors.session_time}
+                                        {errors.duration}
                                     </div>
                                 )}
                             </div>

@@ -17,6 +17,7 @@ class TutingSession extends Model
         'unit_id',
         'scheduled_start',
         'scheduled_stop',
+        'acceptance',
         'actual_start',
         'actual_stop',
     ];

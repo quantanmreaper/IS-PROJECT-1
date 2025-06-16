@@ -91,7 +91,29 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
                 </svg>
             ),
         },
-
+        ...(user.is_tutor
+            ? [
+                  {
+                      label: "Tution Requests",
+                      href: route("tutionRequests.index"),
+                      icon: (
+                          <svg
+                              className="w-6 h-6 text-white"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              viewBox="0 0 24 24"
+                          >
+                              <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                              />
+                          </svg>
+                      ),
+                  },
+              ]
+            : []),
         {
             label: "Get Mentored",
             href: route("getMentored.index"),
@@ -111,36 +133,40 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
                 </svg>
             ),
         },
+        ...(user.user_type === "admin"
+            ? [
+                  {
+                      href: route("units.index"),
+                      label: "Units",
+                      icon: (
+                          <svg
+                              className="w-5 h-5 text-white-500"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              viewBox="0 0 24 24"
+                          >
+                              <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M3 6v13a1 1 0 001 1h14a1 1 0 001-1V6"
+                              />
+                              <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M16 3v4a1 1 0 01-1 1H9a1 1 0 01-1-1V3"
+                              />
+                              <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M8 3h8"
+                              />
+                          </svg>
+                      ),
+                  },
+              ]
+            : []),
 
-        {
-            href: route("units.index"),
-            label: "Units",
-            icon: (
-                <svg
-                    className="w-5 h-5 text-white-500"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3 6v13a1 1 0 001 1h14a1 1 0 001-1V6"
-                    />
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M16 3v4a1 1 0 01-1 1H9a1 1 0 01-1-1V3"
-                    />
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M8 3h8"
-                    />
-                </svg>
-            ),
-        },
         {
             href: route("profile.edit"),
             label: "Profile",
