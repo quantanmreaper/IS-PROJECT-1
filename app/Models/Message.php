@@ -23,6 +23,6 @@ class Message extends Model
 
     public function recepient()
     {
-        return $this->belongsTo(User::class, 'recepient_id');
+        return $this->belongsTo(User::class, 'recipient_id');
     }
 }

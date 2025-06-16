@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use App\Models\Message;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -32,7 +33,16 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'is_tutor' => $request->user()->is_tutor,
+                    'is_mentor' => $request->user()->is_mentor,
+                    'unread_message_count' => Message::where('recipient_id', $request->user()->id)
+                                               ->where('read', false)
+                                               ->count(),
+                ] : null,
             ],
              'flash' => [
             'success' => session('success'),

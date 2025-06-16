@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Auth\TutorRegistrationController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\TutionRequestsController;
 use App\Http\Controllers\GetTutoredController;
 use App\Http\Controllers\GetMentoredController;
@@ -13,6 +15,10 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Broadcast;
+
+// Add this line to register broadcasting routes with web middleware
+//Broadcast::routes(['middleware' => ['web', 'auth']]);
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -80,6 +86,18 @@ Route::middleware('auth')->group(function () {
     //Mentor Registration
     Route::get('/MentorRegistration', [MentorDetailsController::class, 'create'])->name('MentorRegistration');
     Route::post('/MentorRegistration', [MentorDetailsController::class, 'store'])->name('MentorRegistration.store');
+  
+    Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/chat/{user}', [MessageController::class, 'index'])->name('chat.show');
+    Route::get('/chats', [ChatController::class, 'index'])->name('chats.conversations');
+
+    });
+
+    Route::middleware('auth')->group(function () {
+    Route::get('/messages/{user}', [MessageController::class, 'getMessages']);
+    Route::post('/messages/{user}', [MessageController::class, 'sendMessage']);
+});
+
 });
 
 

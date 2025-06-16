@@ -18,6 +18,7 @@ export default function Login({ status, canResetPassword }) {
         e.preventDefault();
 
         post(route('login'), {
+             onSuccess: () => window.location.reload(),
             onFinish: () => reset('password'),
         });
     };
