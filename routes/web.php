@@ -3,6 +3,7 @@
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Auth\TutorRegistrationController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\TutionRequestsController;
 use App\Http\Controllers\GetTutoredController;
 use App\Http\Controllers\GetMentoredController;
 use App\Http\Controllers\MentorDetailsController;
@@ -62,6 +63,11 @@ Route::resource('bookTutor', TutorBookingController::class)
     ->parameters(['bookTutor' => 'tutor'])
     ->names('bookTutor')
     ->except(['create']);
+
+Route::resource('tutionRequests', TutionRequestsController::class)
+    ->middleware(['auth', 'verified'])
+    ->parameters(['tutionRequests' => 'tutingSession'])
+    ->names('tutionRequests');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
