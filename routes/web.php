@@ -11,11 +11,15 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TutorBookingController;
 use App\Http\Controllers\TutorDetailsController;
 use App\Http\Controllers\UnitController;
+use App\Http\Controllers\LessonsController;
+//use App\Models\Course;
+use App\Http\Controllers\CourseRegistrationController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
+use App\Http\Controllers\GetCoursesController;
 
 // Add this line to register broadcasting routes with web middleware
 //Broadcast::routes(['middleware' => ['web', 'auth']]);
@@ -30,7 +34,13 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard', ['user' => Auth::user(),]);
+    $coursesController = app()->make(GetCoursesController::class);
+    $randomCourses = $coursesController->getRandomForDashboard();
+    
+    return Inertia::render('Dashboard', [
+        'user' => Auth::user(),
+        'randomCourses' => $randomCourses
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::resource('tutorRegistration', TutorDetailsController::class)
@@ -87,20 +97,33 @@ Route::middleware('auth')->group(function () {
     Route::get('/MentorRegistration', [MentorDetailsController::class, 'create'])->name('MentorRegistration');
     Route::post('/MentorRegistration', [MentorDetailsController::class, 'store'])->name('MentorRegistration.store');
   
-    Route::middleware(['auth', 'verified'])->group(function () {
+    
+
+    Route::get('/CourseRegistration', [CourseRegistrationController::class, 'create'])->name('CourseRegistration');
+    Route::post('/CourseRegistration', [CourseRegistrationController::class, 'store'])->name('CourseRegistration');
+
+
+  
+
+});
+
+//chatting with mentors
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chat/{user}', [MessageController::class, 'index'])->name('chat.show');
     Route::get('/chats', [ChatController::class, 'index'])->name('chats.conversations');
 
-    });
-
-    Route::middleware('auth')->group(function () {
     Route::get('/messages/{user}', [MessageController::class, 'getMessages']);
     Route::post('/messages/{user}', [MessageController::class, 'sendMessage']);
+
+    Route::get('/courses/lessons', [LessonsController::class, 'create'])->name('lessons.create');
+    Route::get('/courses/{course}/lessons', [LessonsController::class, 'create'])->name('lessons.create.with.course');
+    Route::post('/lessons', [LessonsController::class, 'store'])->name('lessons.store');
+    Route::post('/course-sections', [LessonsController::class, 'createSection'])->name('course-sections.store');
+    
+    // All courses route
+    Route::get('/courses', [GetCoursesController::class, 'index'])->name('courses.all');
 });
-
-});
-
-
+    //
 
 
 require __DIR__ . '/auth.php';

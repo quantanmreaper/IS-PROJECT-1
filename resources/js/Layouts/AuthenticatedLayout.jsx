@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import "toastr/build/toastr.min.css";
 import toastr from "toastr";
 
-export default function AuthenticatedLayout({ header, children }) {
+export default function AuthenticatedLayout({ header, children, hideSearch = false }) {
     const { flash } = usePage().props;
     const user = usePage().props.auth.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -90,11 +90,13 @@ export default function AuthenticatedLayout({ header, children }) {
                         </svg>
                     </button>
 
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="w-full max-w-xs sm:max-w-md md:max-w-lg px-3 sm:px-4 py-1 sm:py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    />
+                    {!hideSearch && (
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            className="w-full max-w-xs sm:max-w-md md:max-w-lg px-3 sm:px-4 py-1 sm:py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        />
+                    )}
                     <div className="ml-3 sm:ml-4 md:ml-6 flex items-center">
                         <span className="text-gray-700 font-medium text-sm sm:text-base">
                             {user.name}

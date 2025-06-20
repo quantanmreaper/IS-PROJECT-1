@@ -15,6 +15,7 @@ class Lesson extends Model
         'content_type',
         'content',
         'order',
+        'video_path', 
     ];
 
     public function section()

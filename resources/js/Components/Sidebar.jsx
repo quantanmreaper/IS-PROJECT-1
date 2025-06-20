@@ -245,6 +245,45 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
             ),
         },
         {
+            id: "publish-course",
+            href: route("CourseRegistration"),
+            label: "Publish Course",
+            icon: (
+                <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
+                    />
+                </svg>
+            ),
+        },
+        {
+            href: "/courses/lessons",
+            label: "Add Course Content",
+            icon: (
+                <svg
+                    className="w-6 h-6 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
+                    />
+                </svg>
+            ),
+        },
+        {
             href: route("logout"),
             label: "Logout",
             icon: (
@@ -266,8 +305,8 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
         },
     ];
     return (
-        <aside className="h-full w-64 bg-gradient-to-b from-blue-600 to-blue-800 text-white flex flex-col shadow-lg z-20 md:fixed md:top-0 md:left-0">
-            <div className="flex items-center justify-between p-4 md:p-6">
+        <aside className="h-screen w-64 bg-gradient-to-b from-blue-600 to-blue-800 text-white flex flex-col shadow-lg z-20 md:fixed md:top-0 md:left-0 overflow-hidden">
+            <div className="flex items-center justify-between p-4 md:p-6 flex-shrink-0">
                 <div className="text-xl md:text-2xl font-bold tracking-wide">
                     Peer Mentor & Tutoring
                 </div>
@@ -292,7 +331,7 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
                     </button>
                 )}
             </div>
-            <nav className="flex-1 px-3 md:px-4 space-y-1 md:space-y-2 overflow-y-auto">
+            <nav className="flex-1 px-3 md:px-4 space-y-1 md:space-y-2 overflow-y-auto pb-4">
                 {links.map((link) => (
                     <Link
                         key={link.href || link.label}

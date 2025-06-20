@@ -1,0 +1,108 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Course;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+
+class GetCoursesController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $courses = Course::with('seller')
+            ->select('id', 'user_id', 'title', 'description', 'thumbnail', 'price', 'status', 'created_at')
+            ->get()
+            ->map(function ($course) {
+                // Check if thumbnail is just a filename or already a full URL
+                if ($course->thumbnail && !filter_var($course->thumbnail, FILTER_VALIDATE_URL)) {
+                    // If it's not a URL, prepend the storage path
+                    $course->thumbnail = asset('storage/' . $course->thumbnail);
+                }
+                return $course;
+            });
+        
+        return Inertia::render('Courses/AllCourses', [
+            'courses' => $courses
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        $course = Course::with(['seller', 'sections', 'reviews'])
+            ->findOrFail($id);
+            
+        return Inertia::render('Courses/Show', [
+            'course' => $course
+        ]);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+    
+    /**
+     * Get random courses for dashboard
+     */
+    public function getRandomForDashboard()
+    {
+        $randomCourses = Course::with('seller')
+            ->select('id', 'user_id', 'title', 'description', 'thumbnail', 'price', 'status')
+            ->where('status', 'published')
+            ->inRandomOrder()
+            ->limit(5)
+            ->get()
+            ->map(function ($course) {
+                // Check if thumbnail is just a filename or already a full URL
+                if ($course->thumbnail && !filter_var($course->thumbnail, FILTER_VALIDATE_URL)) {
+                    // If it's not a URL, prepend the storage path
+                    $course->thumbnail = asset('storage/' . $course->thumbnail);
+                }
+                return $course;
+            });
+            
+        return $randomCourses;
+    }
+}

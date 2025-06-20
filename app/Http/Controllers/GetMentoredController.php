@@ -15,6 +15,7 @@ class GetMentoredController extends Controller
     public function index()
     {
         $mentors = User::where('is_mentor', true)
+            ->whereHas('mentorDetails')
             ->with(['mentorDetails'])
             ->get()
             ->map(function ($mentor) {
