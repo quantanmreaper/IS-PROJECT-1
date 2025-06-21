@@ -51,10 +51,15 @@ class GetCoursesController extends Controller
      */
     public function show(string $id)
     {
-        $course = Course::with(['seller', 'sections', 'reviews'])
+        $course = Course::with(['seller', 'sections.lessons', 'reviews.user'])
             ->findOrFail($id);
             
-        return Inertia::render('Courses/Show', [
+        // Format the thumbnail URL if needed
+        if ($course->thumbnail && !filter_var($course->thumbnail, FILTER_VALIDATE_URL)) {
+            $course->thumbnail = asset('storage/' . $course->thumbnail);
+        }
+            
+        return Inertia::render('Courses/ViewCourse', [
             'course' => $course
         ]);
     }

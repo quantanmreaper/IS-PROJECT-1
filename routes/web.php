@@ -122,6 +122,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     // All courses route
     Route::get('/courses', [GetCoursesController::class, 'index'])->name('courses.all');
+    
+    // View single course route
+    Route::get('/courses/{course}', [GetCoursesController::class, 'show'])->name('courses.show');
 });
     //
 

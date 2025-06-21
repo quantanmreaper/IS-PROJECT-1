@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function AllCourses({ auth, courses }) {
@@ -201,15 +201,15 @@ export default function AllCourses({ auth, courses }) {
                                             )}
                                         </div>
                                         
-                                        <a 
-                                            href={`/courses/${course.id}`} 
+                                        <Link 
+                                            href={route('courses.show', course.id)} 
                                             className="mt-auto w-full inline-flex items-center justify-center px-3 sm:px-4 py-2 sm:py-2.5 border border-transparent text-xs sm:text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                                         >
                                             <span>View Course</span>
                                             <svg className="ml-1 sm:ml-2 w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                             </svg>
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             ))}

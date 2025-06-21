@@ -23,8 +23,8 @@ export default function TutorsList({ tutors }) {
                                         <img
                                             src={
                                                 tutor.pfp
-                                                    ? `/storage/pfps/${tutor.pfp}`
-                                                    : "/default-avatar.png"
+                                                    ? `/storage/${tutor.pfp}`
+                                                    : "/defaultpfp.png"
                                             }
                                             alt={tutor.name}
                                             className="w-24 h-24 rounded-full object-cover mb-4 border-2 border-blue-300"

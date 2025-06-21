@@ -31,14 +31,14 @@ class LessonsController extends Controller
             ->get();
             
         if ($courseId) {
-            // Verify the course belongs to the authenticated user
-            $course = Course::where('id', $courseId)
-                ->where('user_id', Auth::id())
-                ->with('sections')
-                ->firstOrFail();
-                
-            return Inertia::render('Courses/Lessons', [
-                'course' => $course,
+        // Verify the course belongs to the authenticated user
+        $course = Course::where('id', $courseId)
+            ->where('user_id', Auth::id())
+            ->with('sections')
+            ->firstOrFail();
+            
+        return Inertia::render('Courses/Lessons', [
+            'course' => $course,
                 'sections' => $course->sections,
                 'userCourses' => $userCourses
             ]);
@@ -48,7 +48,7 @@ class LessonsController extends Controller
                 'course' => null,
                 'sections' => [],
                 'userCourses' => $userCourses
-            ]);
+        ]);
         }
     }
 
