@@ -3,6 +3,10 @@ import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 
 export default function ViewCourse({ auth, course }) {
+
+
+    
+
     // State for active curriculum section
     const [activeSection, setActiveSection] = useState(0);
     
@@ -346,16 +350,16 @@ export default function ViewCourse({ auth, course }) {
                                     <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                     </svg>
-                                    <h3 className="mt-2 text-sm font-medium text-gray-900">No reviews yet</h3>
+                                    {/* <h3 className="mt-2 text-sm font-medium text-gray-900">No reviews yet</h3>
                                     <p className="mt-1 text-sm text-gray-500">
                                         Be the first to review this course!
-                                    </p>
+                                    </p> */}
                                     <div className="mt-6">
                                         <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 group">
                                             <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                             </svg>
-                                            Add First Review
+                                            Add  Review
                                         </button>
                                     </div>
                                 </div>
