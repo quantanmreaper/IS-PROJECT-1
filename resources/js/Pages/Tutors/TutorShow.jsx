@@ -13,7 +13,7 @@ export default function TutorShow({ tutor }) {
                             <img
                                 src={
                                     tutor.pfp
-                                        ? `/storage/pfps/${tutor.pfp}`
+                                        ? `/storage/${tutor.pfp}`
                                         : "/default-avatar.png"
                                 }
                                 alt={tutor.name}

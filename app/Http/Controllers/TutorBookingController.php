@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Mail\NewBookingNotification;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 
 class TutorBookingController extends Controller
@@ -48,6 +49,9 @@ class TutorBookingController extends Controller
 
         $tutor = User::findOrFail($tutorId);
         $duration = (int) $request->input('duration');
+        $hourlyRate = optional($tutor->TutorDetails)->hourly_rate ?? 0; // Fetch from TutorDetails
+        $amount = $hourlyRate * $duration;
+
         $session = TutingSession::create([
             'tutee_id' => Auth::user()->id,
             'tutor_id' => $tutorId,
@@ -60,8 +64,60 @@ class TutorBookingController extends Controller
         // Send email notification to tutor
         Mail::to($tutor->email)->send(new NewBookingNotification($tutor, Auth::user(), $session));
 
-        return redirect()->route('bookTutor.index', ['tutor' => $tutorId])
-            ->with('success', 'Session booked successfully.');
+        // Prepare payment variables
+        $intasend = new \App\Services\IntaSendCheckoutService();
+        $host = config('app.url'); // Or set your public host URL
+        $redirectUrl = route('payment.callback'); // Define this route for payment callback/redirect
+        $refOrderNumber = 'booking_' . uniqid(); // Only allowed characters
+        $userName = Auth::user()->name;
+        $userEmail = Auth::user()->email;
+        $userPhone = Auth::user()->phone_number ?? '';
+
+        // Log before payment initiation
+        Log::info('Initiating IntaSend payment', [
+            'amount' => $amount,
+            'currency' => 'KES',
+            'user_name' => $userName,
+            'user_email' => $userEmail,
+            'user_phone' => $userPhone,
+            'host' => $host,
+            'redirectUrl' => $redirectUrl,
+            'refOrderNumber' => $refOrderNumber,
+            'session_id' => $session->id,
+        ]);
+
+        try {
+            $resp = $intasend->createCheckout(
+                $amount,
+                'KES',
+                $userName,
+                $userEmail,
+                $userPhone,
+                $host,
+                $redirectUrl,
+                $refOrderNumber
+            );
+            Log::info('IntaSend payment created', [
+                'checkout_url' => $resp->url,
+                'response' => $resp,
+                'session_id' => $session->id,
+            ]);
+            // Always return JSON for AJAX/Inertia requests
+            if ($request->expectsJson() || $request->wantsJson() || $request->header('X-Inertia')) {
+                return response()->json(['redirect' => $resp->url]);
+            }
+            // Only do a real redirect for normal browser requests
+            return redirect()->away($resp->url);
+        } catch (\Exception $e) {
+            Log::error('IntaSend payment initiation failed', [
+                'error' => $e->getMessage(),
+                'session_id' => $session->id,
+            ]);
+            if ($request->expectsJson() || $request->wantsJson() || $request->header('X-Inertia')) {
+                return response()->json(['error' => 'Failed to initiate payment. Please try again.'], 500);
+            }
+            return redirect()->back()->withErrors(['payment' => 'Failed to initiate payment. Please try again.']);
+        }
     }
 
     /**

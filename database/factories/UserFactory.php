@@ -34,8 +34,8 @@ class UserFactory extends Factory
             'is_tutor' => $this->faker->boolean(30),
             'is_mentor' => $this->faker->boolean(30),
             'bio' => $this->faker->text(200),
-            'pfp' => 'defaultpfp.png',
-            'student_id' => 'defaultStudentId.pdf',
+            'pfp' => 'pfps/defaultpfp.png',
+            'student_id' => 'ids/defaultStudentId.pdf',
         ];
     }
 

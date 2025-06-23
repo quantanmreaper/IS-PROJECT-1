@@ -36,7 +36,7 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     $coursesController = app()->make(GetCoursesController::class);
     $randomCourses = $coursesController->getRandomForDashboard();
-    
+
     return Inertia::render('Dashboard', [
         'user' => Auth::user(),
         'randomCourses' => $randomCourses
@@ -96,15 +96,11 @@ Route::middleware('auth')->group(function () {
     //Mentor Registration
     Route::get('/MentorRegistration', [MentorDetailsController::class, 'create'])->name('MentorRegistration');
     Route::post('/MentorRegistration', [MentorDetailsController::class, 'store'])->name('MentorRegistration.store');
-  
-    
+
+
 
     Route::get('/CourseRegistration', [CourseRegistrationController::class, 'create'])->name('CourseRegistration');
     Route::post('/CourseRegistration', [CourseRegistrationController::class, 'store'])->name('CourseRegistration');
-
-
-  
-
 });
 
 //chatting with mentors
@@ -119,14 +115,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/courses/{course}/lessons', [LessonsController::class, 'create'])->name('lessons.create.with.course');
     Route::post('/lessons', [LessonsController::class, 'store'])->name('lessons.store');
     Route::post('/course-sections', [LessonsController::class, 'createSection'])->name('course-sections.store');
-    
+
     // All courses route
     Route::get('/courses', [GetCoursesController::class, 'index'])->name('courses.all');
-    
+
     // View single course route
     Route::get('/courses/{course}', [GetCoursesController::class, 'show'])->name('courses.show');
 });
-    //
+
+// Payment callback route after IntaSend checkout
+Route::get('/bookTutor/thank-you', function () {
+    return Inertia::render('TutorBooking/Booked'); // or your custom thank you/confirmation page
+})->name('payment.callback');
 
 
 require __DIR__ . '/auth.php';

@@ -16,11 +16,31 @@ export default function TutorBookingCreate({ tutor, units }) {
         setData(name, value);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        post(route("bookTutor.store", tutor.id), {
-            onSuccess: () => reset(),
-        });
+        try {
+            const response = await fetch(route("bookTutor.store", tutor.id), {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute("content"),
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            if (result.redirect) {
+                window.location.href = result.redirect;
+            } else if (result.error) {
+                // Optionally show error to user
+                alert(result.error);
+            }
+        } catch (err) {
+            // Optionally show error to user
+            alert("Failed to book session. Please try again.");
+        }
     };
 
     return (
