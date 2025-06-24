@@ -84,7 +84,15 @@ export default function Conversations({ conversations, auth }) {
                                             >
                                                 <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
                                                     {chat.pfp ? (
-                                                        <img src={chat.pfp} alt={chat.name} className="h-10 w-10 object-cover" />
+                                                        <img 
+                                                            src={chat.pfp} 
+                                                            alt={chat.name} 
+                                                            className="h-10 w-10 object-cover"
+                                                            onError={(e) => {
+                                                                e.target.onerror = null;
+                                                                e.target.src = '/storage/pfps/defaultpfp.png';
+                                                            }}
+                                                        />
                                                     ) : (
                                                         <span className="text-lg font-medium text-gray-700">
                                                             {chat.name.charAt(0).toUpperCase()}

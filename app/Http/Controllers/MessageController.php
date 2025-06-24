@@ -28,11 +28,24 @@ class MessageController extends Controller
         ->orderBy('created_at', 'asc')
         ->get();
 
+        // Add full URL to profile pictures in messages
+        $messages->transform(function($message) {
+            if ($message->sender && $message->sender->pfp && !str_starts_with($message->sender->pfp, 'http')) {
+                $message->sender->pfp = asset('storage/' . $message->sender->pfp);
+            }
+            return $message;
+        });
+
         // Mark messages as read
         Message::where('sender_id', $user->id)
               ->where('recipient_id', $authUser->id)
               ->where('read', false)
               ->update(['read' => true]);
+
+        // Add full URL to recipient's profile picture
+        if ($user->pfp && !str_starts_with($user->pfp, 'http')) {
+            $user->pfp = asset('storage/' . $user->pfp);
+        }
 
         return Inertia::render('Chat/Show', [
             'messages' => $messages,
@@ -55,6 +68,14 @@ class MessageController extends Controller
         ->orderBy('created_at', 'asc')
         ->get();
 
+        // Add full URL to profile pictures in messages
+        $messages->transform(function($message) {
+            if ($message->sender && $message->sender->pfp && !str_starts_with($message->sender->pfp, 'http')) {
+                $message->sender->pfp = asset('storage/' . $message->sender->pfp);
+            }
+            return $message;
+        });
+
         return response()->json(['messages' => $messages]);
     }
 
@@ -72,6 +93,11 @@ class MessageController extends Controller
 
         // Load the sender relationship
         $message->load('sender');
+        
+        // Add full URL to sender's profile picture
+        if ($message->sender && $message->sender->pfp && !str_starts_with($message->sender->pfp, 'http')) {
+            $message->sender->pfp = asset('storage/' . $message->sender->pfp);
+        }
 
         // Broadcast the message
         broadcast(new MessageSent($message, Auth::user()))->toOthers();

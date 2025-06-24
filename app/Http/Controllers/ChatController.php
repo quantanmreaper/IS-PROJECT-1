@@ -33,6 +33,14 @@ class ChatController extends Controller
         }])
         ->get();
         
+        // Add full URL to profile pictures
+        $conversationUsers->transform(function($user) {
+            if ($user->pfp && !str_starts_with($user->pfp, 'http')) {
+                $user->pfp = asset('storage/' . $user->pfp);
+            }
+            return $user;
+        });
+        
         return Inertia::render('Chat/Conversations', [
             'conversations' => $conversationUsers
         ]);

@@ -35,9 +35,23 @@ class MessageSent implements ShouldBroadcast
     }
     
     public function broadcastWith(){
+        // Load sender information
+        $this->message->load('sender');
+        
+        // Add full URL to profile pictures
+        if ($this->message->sender && $this->message->sender->pfp && !str_starts_with($this->message->sender->pfp, 'http')) {
+            $this->message->sender->pfp = asset('storage/' . $this->message->sender->pfp);
+        }
+        
+        // Add full URL to user's profile picture
+        $userData = $this->user->only(['id', 'name', 'pfp']);
+        if ($userData['pfp'] && !str_starts_with($userData['pfp'], 'http')) {
+            $userData['pfp'] = asset('storage/' . $userData['pfp']);
+        }
+        
         return[
-            'message' => $this->message->load('sender'),
-            'user' => $this->user->only(['id', 'name','pfp']),
+            'message' => $this->message,
+            'user' => $userData,
         ];
     }
 
