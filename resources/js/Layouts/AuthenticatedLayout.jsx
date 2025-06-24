@@ -22,16 +22,24 @@ export default function AuthenticatedLayout({ header, children, hideSearch = fal
             toastr.error(flash.error);
         }
 
+        // Extract the current chat user ID from the URL if we're in a chat
+        const pathParts = window.location.pathname.split('/');
+        const isChatPage = pathParts[1] === 'chat';
+        const chatUserId = isChatPage ? parseInt(pathParts[2], 10) : null;
+        
         // Listen for new messages
         if (window.Echo) {
             const channel = window.Echo.private(`chat.${user.id}`);
             
             channel.listen('.MessageSent', (data) => {
-                // Update unread count
-                setUnreadCount(prev => prev + 1);
-                
-                // Show notification
-                toastr.info(`New message from ${data.user.name}`);
+                // Only increment unread count if we're not currently in a chat with this user
+                if (!isChatPage || data.user.id !== chatUserId) {
+                    // Update unread count
+                    setUnreadCount(prev => prev + 1);
+                    
+                    // Show notification
+                    toastr.info(`New message from ${data.user.name}`);
+                }
             });
             
             return () => {

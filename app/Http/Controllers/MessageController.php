@@ -104,4 +104,16 @@ class MessageController extends Controller
 
         return response()->json(['message' => $message]);
     }
+
+    public function markAsRead(User $user)
+    {
+        $authUser = Auth::user();
+        
+        $count = Message::where('sender_id', $user->id)
+              ->where('recipient_id', $authUser->id)
+              ->where('read', false)
+              ->update(['read' => true]);
+          
+        return response()->json(['success' => true, 'count' => $count]);
+    }
 }

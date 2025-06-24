@@ -110,6 +110,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/messages/{user}', [MessageController::class, 'getMessages']);
     Route::post('/messages/{user}', [MessageController::class, 'sendMessage']);
+    Route::post('/messages/{user}/mark-read', [MessageController::class, 'markAsRead']);
 
     Route::get('/courses/lessons', [LessonsController::class, 'create'])->name('lessons.create');
     Route::get('/courses/{course}/lessons', [LessonsController::class, 'create'])->name('lessons.create.with.course');

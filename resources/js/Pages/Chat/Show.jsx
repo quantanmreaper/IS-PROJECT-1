@@ -29,6 +29,13 @@ export default function Show({ messages: initialMessages, recipient, auth }) {
     useEffect(() => {
         scrollToBottom();
         
+        // Mark all messages as read when the chat is opened
+        axios.post(`/messages/${recipient.id}/mark-read`)
+            .then(response => {
+                // If there were unread messages, update the global unread count
+                // We'll need to pass a function from AuthenticatedLayout to do this
+            });
+        
         // Listen for incoming messages
         const channel = window.Echo.private(`chat.${auth.user.id}`);
         
@@ -47,6 +54,9 @@ export default function Show({ messages: initialMessages, recipient, auth }) {
             console.log('Message received:', data);
             if (data.message.sender_id === recipient.id) {
                 setMessages((prevMessages) => [...prevMessages, data.message]);
+                
+                // Mark the message as read immediately since we're in the chat
+                axios.post(`/messages/${recipient.id}/mark-read`);
             }
         });
         
