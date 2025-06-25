@@ -20,6 +20,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
 use App\Http\Controllers\GetCoursesController;
+use App\Http\Controllers\CourseReviewController;
 
 // Add this line to register broadcasting routes with web middleware
 //Broadcast::routes(['middleware' => ['web', 'auth']]);
@@ -122,6 +123,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // View single course route
     Route::get('/courses/{course}', [GetCoursesController::class, 'show'])->name('courses.show');
+    
+    // Course reviews routes
+    Route::post('/courses/{course}/reviews', [CourseReviewController::class, 'store'])->name('course.reviews.store');
+    Route::delete('/courses/{course}/reviews/{review}', [CourseReviewController::class, 'destroy'])->name('course.reviews.destroy');
 });
 
 // Payment callback route after IntaSend checkout

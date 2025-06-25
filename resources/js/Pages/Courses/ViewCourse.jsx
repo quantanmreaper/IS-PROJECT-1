@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
 import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import axios from 'axios';
+import { router } from '@inertiajs/react';
 
 export default function ViewCourse({ auth, course }) {
-
-
-    
-
     // State for active curriculum section
     const [activeSection, setActiveSection] = useState(0);
+    
+    // State for review form
+    const [showReviewForm, setShowReviewForm] = useState(false);
+    const [rating, setRating] = useState(0);
+    const [hoverRating, setHoverRating] = useState(0);
+    const [comment, setComment] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [error, setError] = useState('');
+    
+    // State for course reviews
+    const [reviews, setReviews] = useState(course.reviews || []);
     
     // Format date
     const formatDate = (dateString) => {
@@ -17,14 +26,42 @@ export default function ViewCourse({ auth, course }) {
     };
 
     // Calculate average rating
-    const averageRating = course.reviews && course.reviews.length > 0
-        ? course.reviews.reduce((acc, review) => acc + review.rating, 0) / course.reviews.length
+    const averageRating = reviews.length > 0
+        ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length
         : 0;
     
     // Calculate total lessons count
     const totalLessons = course.sections
         ? course.sections.reduce((total, section) => total + section.lessons.length, 0)
         : 0;
+    
+    // Submit review handler
+    const handleSubmitReview = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        setError('');
+        
+        try {
+            const response = await axios.post(`/courses/${course.id}/reviews`, {
+                rating,
+                comment
+            });
+            
+            // Add new review to the list
+            setReviews([...reviews, response.data.review]);
+            
+            // Reset form and close
+            setRating(0);
+            setComment('');
+            setShowReviewForm(false);
+        } catch (err) {
+            setError(err.response?.data?.errors?.comment?.[0] || 
+                    err.response?.data?.errors?.rating?.[0] || 
+                    'Something went wrong. Please try again.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     return (
         <AuthenticatedLayout user={auth.user}>
@@ -78,7 +115,7 @@ export default function ViewCourse({ auth, course }) {
                                         </p>
                                     </div>
                                 </div>
-                                {course.reviews && course.reviews.length > 0 && (
+                                {reviews.length > 0 && (
                                     <div className="flex items-center mt-4 mb-4 bg-gray-50 p-3 rounded-lg">
                                         <div className="flex items-center">
                                             {[...Array(5)].map((_, i) => (
@@ -92,7 +129,7 @@ export default function ViewCourse({ auth, course }) {
                                                 </svg>
                                             ))}
                                             <span className="ml-2 text-sm font-medium text-gray-700">
-                                                {averageRating.toFixed(1)} ({course.reviews.length} reviews)
+                                                {averageRating.toFixed(1)} ({reviews.length} reviews)
                                             </span>
                                         </div>
                                     </div>
@@ -146,7 +183,7 @@ export default function ViewCourse({ auth, course }) {
                             <div className="flex flex-col items-center text-center">
                                 <div className="bg-blue-100 p-3 rounded-full mb-2">
                                     <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                 </div>
                                 <h4 className="font-medium text-gray-900">Language</h4>
@@ -263,13 +300,107 @@ export default function ViewCourse({ auth, course }) {
                         <div className="p-5 sm:p-8">
                             <div className="flex justify-between items-center mb-8">
                                 <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Student Reviews</h2>
-                                {course.reviews && course.reviews.length > 0 && (
+                                {reviews.length > 0 && (
                                     <span className="bg-blue-100 text-blue-800 text-xs font-medium px-3 py-1 rounded-full">
-                                        {course.reviews.length} {course.reviews.length === 1 ? 'review' : 'reviews'}
+                                        {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
                                     </span>
                                 )}
                             </div>
-                            {course.reviews && course.reviews.length > 0 ? (
+
+                            {/* Add Review Button */}
+                            <div className="mb-8 text-center">
+                                {!showReviewForm ? (
+                                    <button 
+                                        onClick={() => setShowReviewForm(true)}
+                                        className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 group"
+                                    >
+                                        <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                        Add a Review
+                                    </button>
+                                ) : null}
+                            </div>
+
+                            {/* Inline Review Form */}
+                            {showReviewForm && (
+                                <div className="bg-blue-50 rounded-lg p-6 mb-8 border border-blue-100 shadow-sm">
+                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Write Your Review</h3>
+                                    <form onSubmit={handleSubmitReview}>
+                                        <div className="mb-5">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Your Rating</label>
+                                            <div className="flex items-center">
+                                                {[1, 2, 3, 4, 5].map((star) => (
+                                                    <button
+                                                        key={star}
+                                                        type="button"
+                                                        onClick={() => setRating(star)}
+                                                        onMouseEnter={() => setHoverRating(star)}
+                                                        onMouseLeave={() => setHoverRating(0)}
+                                                        className="focus:outline-none mr-1"
+                                                    >
+                                                        <svg 
+                                                            className={`w-8 h-8 ${
+                                                                (hoverRating || rating) >= star ? 'text-yellow-400' : 'text-gray-300'
+                                                            } transition-colors duration-150 hover:scale-110`} 
+                                                            fill="currentColor" 
+                                                            viewBox="0 0 20 20"
+                                                        >
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                        </svg>
+                                                    </button>
+                                                ))}
+                                                <span className="ml-2 text-sm text-gray-500">
+                                                    {rating > 0 ? `${rating}/5` : 'Select a rating'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="mb-5">
+                                            <label htmlFor="comment" className="block text-sm font-medium text-gray-700 mb-2">Your Review</label>
+                                            <textarea
+                                                id="comment"
+                                                rows="4"
+                                                value={comment}
+                                                onChange={(e) => setComment(e.target.value)}
+                                                placeholder="Share your experience with this course..."
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                                required
+                                            />
+                                        </div>
+                                        {error && (
+                                            <div className="mb-4 p-2 bg-red-50 text-sm text-red-600 rounded-md">
+                                                {error}
+                                            </div>
+                                        )}
+                                        <div className="flex justify-end">
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setShowReviewForm(false);
+                                                    setRating(0);
+                                                    setComment('');
+                                                    setError('');
+                                                }}
+                                                className="mr-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 border border-gray-300 rounded-md shadow-sm"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                disabled={isSubmitting || rating === 0 || comment.trim() === ''}
+                                                className={`px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 
+                                                    ${(isSubmitting || rating === 0 || comment.trim() === '') ? 
+                                                    'opacity-60 cursor-not-allowed' : 
+                                                    'hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'}`}
+                                            >
+                                                {isSubmitting ? 'Submitting...' : 'Submit Review'}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            )}
+
+                            {reviews.length > 0 ? (
                                 <>
                                     {/* Rating Summary */}
                                     <div className="bg-gray-50 rounded-lg p-6 mb-8 flex flex-col md:flex-row md:items-center gap-6">
@@ -293,13 +424,13 @@ export default function ViewCourse({ auth, course }) {
                                                 </div>
                                             </div>
                                             <p className="text-sm text-gray-500">
-                                                Based on {course.reviews.length} {course.reviews.length === 1 ? 'review' : 'reviews'}
+                                                Based on {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
                                             </p>
                                         </div>
                                     </div>
                                     {/* Individual Reviews */}
                                     <div className="space-y-8">
-                                        {course.reviews.map((review) => (
+                                        {reviews.map((review) => (
                                             <div key={review.id} className="border-b border-gray-200 pb-8 last:border-b-0 last:pb-0 group">
                                                 <div className="flex items-start">
                                                     <div className="flex-shrink-0 mr-4">
@@ -335,33 +466,25 @@ export default function ViewCourse({ auth, course }) {
                                             </div>
                                         ))}
                                     </div>
-                                    {/* Add Review Button */}
-                                    <div className="mt-10 pt-6 border-t border-gray-200 text-center">
-                                        <button className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 group">
-                                            <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                            Write a Review
-                                        </button>
-                                    </div>
                                 </>
                             ) : (
                                 <div className="text-center py-12 border border-dashed border-gray-300 rounded-lg bg-blue-50">
                                     <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                     </svg>
-                                    {/* <h3 className="mt-2 text-sm font-medium text-gray-900">No reviews yet</h3>
-                                    <p className="mt-1 text-sm text-gray-500">
+                                    <h3 className="mt-2 text-sm font-medium text-gray-900">No reviews yet</h3>
+                                    <p className="mt-1 text-sm text-gray-500 mb-4">
                                         Be the first to review this course!
-                                    </p> */}
-                                    <div className="mt-6">
-                                        <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 group">
-                                            <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                            </svg>
-                                            Add  Review
-                                        </button>
-                                    </div>
+                                    </p>
+                                    <button
+                                        onClick={() => setShowReviewForm(true)}
+                                        className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+                                    >
+                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                        Write First Review
+                                    </button>
                                 </div>
                             )}
                         </div>
