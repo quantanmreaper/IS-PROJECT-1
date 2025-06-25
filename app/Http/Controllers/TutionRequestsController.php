@@ -22,7 +22,7 @@ class TutionRequestsController extends Controller
             return redirect()->route('login')->with('error', 'You must be logged in to view this page.');
         }
         $tutingSessions = TutingSession::where('tutor_id', $userId)
-            ->with('unit')
+            ->with(['unit', 'tutee:id,name,pfp'])
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($session) {
@@ -41,6 +41,7 @@ class TutionRequestsController extends Controller
                     'scheduled_stop' => $stop ? \Carbon\Carbon::parse($stop)->format('D, jS M \a\t g:i a') : null,
                     'duration' => $duration,
                     'accepted' => $session->acceptance ?? false,
+                    'tutee' => $session->tutee,
                 ];
             });
 
