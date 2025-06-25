@@ -98,13 +98,13 @@ export default function AuthenticatedLayout({ header, children, hideSearch = fal
                         </svg>
                     </button>
 
-                    {!hideSearch && (
+                    {/* {!hideSearch && (
                     <input
                         type="text"
                         placeholder="Search..."
                         className="w-full max-w-xs sm:max-w-md md:max-w-lg px-3 sm:px-4 py-1 sm:py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
-                    )}
+                    )} */}
                     <div className="ml-3 sm:ml-4 md:ml-6 flex items-center">
                         <span className="text-gray-700 font-medium text-sm sm:text-base">
                             {user.name}
