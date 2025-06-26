@@ -22,16 +22,24 @@ export default function AuthenticatedLayout({ header, children, hideSearch = fal
             toastr.error(flash.error);
         }
 
+        // Extract the current chat user ID from the URL if we're in a chat
+        const pathParts = window.location.pathname.split('/');
+        const isChatPage = pathParts[1] === 'chat';
+        const chatUserId = isChatPage ? parseInt(pathParts[2], 10) : null;
+        
         // Listen for new messages
         if (window.Echo) {
             const channel = window.Echo.private(`chat.${user.id}`);
             
             channel.listen('.MessageSent', (data) => {
-                // Update unread count
-                setUnreadCount(prev => prev + 1);
-                
-                // Show notification
-                toastr.info(`New message from ${data.user.name}`);
+                // Only increment unread count if we're not currently in a chat with this user
+                if (!isChatPage || data.user.id !== chatUserId) {
+                    // Update unread count
+                    setUnreadCount(prev => prev + 1);
+                    
+                    // Show notification
+                    toastr.info(`New message from ${data.user.name}`);
+                }
             });
             
             return () => {
@@ -90,13 +98,13 @@ export default function AuthenticatedLayout({ header, children, hideSearch = fal
                         </svg>
                     </button>
 
-                    {!hideSearch && (
+                    {/* {!hideSearch && (
                     <input
                         type="text"
                         placeholder="Search..."
                         className="w-full max-w-xs sm:max-w-md md:max-w-lg px-3 sm:px-4 py-1 sm:py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
-                    )}
+                    )} */}
                     <div className="ml-3 sm:ml-4 md:ml-6 flex items-center">
                         <span className="text-gray-700 font-medium text-sm sm:text-base">
                             {user.name}
