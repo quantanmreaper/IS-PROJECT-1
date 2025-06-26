@@ -63,7 +63,7 @@ class RegisteredUserController extends Controller
             $user->pfp = $path;
             $user->save(); // Save after adding the image path
         } else {
-            $user->pfp = 'pfps/default.png'; // Set default profile picture
+            $user->pfp = 'pfps/defaultpfp.png'; // Set default profile picture
             $user->save(); // Save after setting the default profile picture
         }
 

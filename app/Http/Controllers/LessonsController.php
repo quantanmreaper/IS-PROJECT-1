@@ -29,16 +29,16 @@ class LessonsController extends Controller
         $userCourses = Course::where('user_id', Auth::id())
             ->select('id', 'title')
             ->get();
-            
+
         if ($courseId) {
-        // Verify the course belongs to the authenticated user
-        $course = Course::where('id', $courseId)
-            ->where('user_id', Auth::id())
-            ->with('sections')
-            ->firstOrFail();
-            
-        return Inertia::render('Courses/Lessons', [
-            'course' => $course,
+            // Verify the course belongs to the authenticated user
+            $course = Course::where('id', $courseId)
+                ->where('user_id', Auth::id())
+                ->with('sections')
+                ->firstOrFail();
+
+            return Inertia::render('Courses/Lessons', [
+                'course' => $course,
                 'sections' => $course->sections,
                 'userCourses' => $userCourses
             ]);
@@ -48,7 +48,7 @@ class LessonsController extends Controller
                 'course' => null,
                 'sections' => [],
                 'userCourses' => $userCourses
-        ]);
+            ]);
         }
     }
 
@@ -81,7 +81,7 @@ class LessonsController extends Controller
         // Create the lesson
         $lesson = Lesson::create($validated);
 
-        return redirect()->route('dashboard', $course->id)
+        return redirect()->route('lessons.create.with.course', $course->id)
             ->with('success', 'Lesson added successfully!');
     }
 
@@ -104,7 +104,7 @@ class LessonsController extends Controller
         // Create the section
         $section = CourseSection::create($validated);
 
-        return redirect()->route('dashboard', $course->id)
+        return redirect()->route('lessons.create.with.course', $course->id)
             ->with('success', 'Section added successfully!');
     }
 

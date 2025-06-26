@@ -8,11 +8,17 @@ import { useEffect, useState } from "react";
 import "toastr/build/toastr.min.css";
 import toastr from "toastr";
 
-export default function AuthenticatedLayout({ header, children, hideSearch = false }) {
+export default function AuthenticatedLayout({
+    header,
+    children,
+    hideSearch = false,
+}) {
     const { flash } = usePage().props;
     const user = usePage().props.auth.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [unreadCount, setUnreadCount] = useState(user.unread_message_count || 0);
+    const [unreadCount, setUnreadCount] = useState(
+        user.unread_message_count || 0
+    );
 
     useEffect(() => {
         if (flash && flash.success) {
@@ -21,29 +27,32 @@ export default function AuthenticatedLayout({ header, children, hideSearch = fal
         if (flash && flash.error) {
             toastr.error(flash.error);
         }
+        if (flash && flash.message) {
+            toastr.success(flash.message);
+        }
 
         // Extract the current chat user ID from the URL if we're in a chat
-        const pathParts = window.location.pathname.split('/');
-        const isChatPage = pathParts[1] === 'chat';
+        const pathParts = window.location.pathname.split("/");
+        const isChatPage = pathParts[1] === "chat";
         const chatUserId = isChatPage ? parseInt(pathParts[2], 10) : null;
-        
+
         // Listen for new messages
         if (window.Echo) {
             const channel = window.Echo.private(`chat.${user.id}`);
-            
-            channel.listen('.MessageSent', (data) => {
+
+            channel.listen(".MessageSent", (data) => {
                 // Only increment unread count if we're not currently in a chat with this user
                 if (!isChatPage || data.user.id !== chatUserId) {
                     // Update unread count
-                    setUnreadCount(prev => prev + 1);
-                    
+                    setUnreadCount((prev) => prev + 1);
+
                     // Show notification
                     toastr.info(`New message from ${data.user.name}`);
                 }
             });
-            
+
             return () => {
-                channel.stopListening('.MessageSent');
+                channel.stopListening(".MessageSent");
             };
         }
     }, []);
@@ -52,7 +61,9 @@ export default function AuthenticatedLayout({ header, children, hideSearch = fal
         <div className="flex min-h-screen bg-gray-100">
             {/* Desktop sidebar */}
             <div className="hidden md:block">
-                <Sidebar user={{...user, unread_message_count: unreadCount}} />
+                <Sidebar
+                    user={{ ...user, unread_message_count: unreadCount }}
+                />
             </div>
 
             {/* Mobile sidebar */}
@@ -61,7 +72,10 @@ export default function AuthenticatedLayout({ header, children, hideSearch = fal
                     {/* Sidebar */}
                     <div className="fixed inset-y-0 left-0 w-64 z-50">
                         <Sidebar
-                            user={{...user, unread_message_count: unreadCount}}
+                            user={{
+                                ...user,
+                                unread_message_count: unreadCount,
+                            }}
                             mobile={true}
                             closeSidebar={() => setSidebarOpen(false)}
                         />

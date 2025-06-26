@@ -20,7 +20,7 @@ class GetTutoredController extends Controller
         $tutors = User::where('is_tutor', true)
             ->whereHas('tutorDetails')
             ->where('id', '!=', optional(Auth::user())->id)
-            ->with(['tutorDetails'])
+            ->with(['tutorDetails', 'units'])
             ->get()
             ->map(function ($tutor) {
                 $details = $tutor->tutorDetails;
@@ -32,6 +32,13 @@ class GetTutoredController extends Controller
                     'name' => $tutor->name,
                     'pfp' => $tutor->pfp ?? null,
                     'hourly_rate' => $details->hourly_rate ?? null,
+                    'units' => $tutor->units->map(function ($unit) {
+                        return [
+                            'id' => $unit->id,
+                            'name' => $unit->name,
+                            'proficiency_level' => $unit->pivot->proficiency_level ?? null,
+                        ];
+                    })->toArray(),
                 ];
             });
 
