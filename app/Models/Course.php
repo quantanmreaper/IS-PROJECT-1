@@ -44,4 +44,9 @@ class Course extends Model
             ->withPivot('amount', 'purchased_at')
             ->withTimestamps();
     }
+
+    public function hasPurchased($userId)
+    {
+        return $this->purchases()->where('user_id', $userId)->where('status', 'paid')->exists();
+    }
 }

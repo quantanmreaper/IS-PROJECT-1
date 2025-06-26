@@ -14,6 +14,8 @@ class CoursePurchase extends Model
         'course_id',
         'amount',
         'purchased_at',
+        'status',
+        'transaction_ref',
     ];
 
     public function course()
