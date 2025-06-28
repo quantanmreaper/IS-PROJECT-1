@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class LessonsController extends Controller
 {
@@ -57,32 +58,46 @@ class LessonsController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'course_section_id' => 'required|exists:course_sections,id',
-            'title' => 'required|string|max:255',
-            'content_type' => 'required|in:video,pdf,text,quiz',
-            'content' => 'required|string',
-            'order' => 'required|integer|min:1',
-            'video_path' => $request->content_type == 'video' ? 'required|file|mimes:mp4,webm,ogg|max:102400' : 'nullable',
-        ]);
+        try {
+            // Check file size before validation to provide a better error message
+            if ($request->hasFile('video_path') && $request->file('video_path')->getSize() > 2 * 1024 * 1024) {
+                return redirect()->back()->withErrors([
+                    'video_path' => 'Video file size exceeds the server limit of 2MB. Please use a smaller file or contact the administrator to increase the limit.'
+                ]);
+            }
+            
+            $validated = $request->validate([
+                'course_section_id' => 'required|exists:course_sections,id',
+                'title' => 'required|string|max:255',
+                'content_type' => 'required|in:video,pdf,text,quiz',
+                'content' => 'required|string',
+                'order' => 'required|integer|min:1',
+                'video_path' => $request->content_type == 'video' ? 'required|file|mimes:mp4,webm,ogg|max:2048' : 'nullable', // Reduced to 2MB
+            ]);
 
-        // Verify the section belongs to a course owned by the authenticated user
-        $section = CourseSection::findOrFail($validated['course_section_id']);
-        $course = Course::where('id', $section->course_id)
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+            // Verify the section belongs to a course owned by the authenticated user
+            $section = CourseSection::findOrFail($validated['course_section_id']);
+            $course = Course::where('id', $section->course_id)
+                ->where('user_id', Auth::id())
+                ->firstOrFail();
 
-        // Handle video upload if provided
-        if ($request->hasFile('video_path')) {
-            $videoPath = $request->file('video_path')->store('lesson-videos', 'public');
-            $validated['video_path'] = $videoPath;
+            // Handle video upload store url for the video 
+            if ($request->hasFile('video_path')) {
+                $videoPath = $request->file('video_path')->store('lesson-videos', 'public');
+                $validated['video_path'] = $videoPath;
+            }
+
+            // Create the lesson
+            $lesson = Lesson::create($validated);
+
+            return redirect()->route('lessons.create.with.course', $course->id)
+                ->with('success', 'Lesson added successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error storing lesson: ' . $e->getMessage());
+            return redirect()->back()->withErrors([
+                'error' => 'An error occurred while uploading. The file may be too large for the server to handle.'
+            ]);
         }
-
-        // Create the lesson
-        $lesson = Lesson::create($validated);
-
-        return redirect()->route('lessons.create.with.course', $course->id)
-            ->with('success', 'Lesson added successfully!');
     }
 
     /**
