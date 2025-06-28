@@ -264,46 +264,6 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
                 </svg>
             ),
         },
-        {
-            href: route("profile.edit"),
-            label: "Profile",
-            icon: (
-                <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                >
-                    <circle cx="12" cy="8" r="4" />
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M4 20c0-2.21 3.582-4 8-4s8 1.79 8 4"
-                    />
-                </svg>
-            ),
-        },
-        {
-            href: route("logout"),
-            label: "Logout",
-            icon: (
-                <svg
-                    className="w-6 h-6 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                    />
-                </svg>
-            ),
-            method: "post",
-        },
     ];
     return (
         <aside className="h-screen w-64 bg-gradient-to-b from-blue-600 to-blue-800 text-white flex flex-col shadow-lg z-20 md:fixed md:top-0 md:left-0 overflow-hidden">

@@ -112,28 +112,52 @@ export default function AuthenticatedLayout({
                         </svg>
                     </button>
 
-                    {/* {!hideSearch && (
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="w-full max-w-xs sm:max-w-md md:max-w-lg px-3 sm:px-4 py-1 sm:py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    />
-                    )} */}
-                    <div className="ml-3 sm:ml-4 md:ml-6 flex items-center">
-                        <span className="text-gray-700 font-medium text-sm sm:text-base">
-                            {user.name}
-                        </span>
+                    {/* Left side - can be used for title or search */}
+                    <div className="flex-1">
+                        <div className="text-xl font-semibold text-gray-800">
+{/*                             Peer Mentor & Tutoring
+ */}                        </div>
+                    </div>
+
+                    {/* Right side - user dropdown */}
+                    <div className="flex items-center">
+                        <Dropdown>
+                            <Dropdown.Trigger>
+                                <button className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-900 focus:outline-none transition duration-150 ease-in-out">
+                                    <div className="flex items-center">
+                                        <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white mr-2">
+                                            {user.name.charAt(0).toUpperCase()}
+                                        </div>
+                                        <span className="mr-1">{user.name}</span>
+                                    </div>
+                                    <svg
+                                        className="ml-2 -mr-0.5 h-4 w-4"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </button>
+                            </Dropdown.Trigger>
+
+                            <Dropdown.Content>
+                                <Dropdown.Link href={route('profile.edit')}>
+                                    Profile
+                                </Dropdown.Link>
+                                <Dropdown.Link href={route('logout')} method="post" as="button">
+                                    Log Out
+                                </Dropdown.Link>
+                            </Dropdown.Content>
+                        </Dropdown>
                     </div>
                 </div>
 
-                {/* Optional: header prop */}
-                {header && (
-                    <header className="bg-white shadow">
-                        <div className="mx-auto max-w-7xl px-4 py-4 sm:py-6 sm:px-6 lg:px-8">
-                            {header}
-                        </div>
-                    </header>
-                )}
+               
                 <main>{children}</main>
             </div>
         </div>
