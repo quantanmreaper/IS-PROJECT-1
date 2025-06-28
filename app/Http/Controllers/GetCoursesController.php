@@ -15,6 +15,7 @@ class GetCoursesController extends Controller
     {
         $courses = Course::with('seller')
             ->select('id', 'user_id', 'title', 'description', 'thumbnail', 'price', 'status', 'created_at')
+            ->where('status', 'published')
             ->get()
             ->map(function ($course) {
                 // Check if thumbnail is just a filename or already a full URL
@@ -53,6 +54,11 @@ class GetCoursesController extends Controller
     {
         $course = Course::with(['seller', 'sections.lessons', 'reviews.user'])
             ->findOrFail($id);
+            
+        // Check if the course is published
+        if ($course->status !== 'published') {
+            abort(403, 'This course is not available for viewing.');
+        }
             
         // Format the thumbnail URL if needed
         if ($course->thumbnail && !filter_var($course->thumbnail, FILTER_VALIDATE_URL)) {
