@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class GetCoursesController extends Controller
 {
@@ -92,6 +93,19 @@ class GetCoursesController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    
+    /**
+     * Display the dashboard with random courses
+     */
+    public function dashboard()
+    {
+        $randomCourses = $this->getRandomForDashboard();
+        
+        return Inertia::render('Dashboard', [
+            'user' => Auth::user(),
+            'randomCourses' => $randomCourses
+        ]);
     }
     
     /**

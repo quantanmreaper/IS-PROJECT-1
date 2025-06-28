@@ -35,15 +35,9 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    $coursesController = app()->make(GetCoursesController::class);
-    $randomCourses = $coursesController->getRandomForDashboard();
-
-    return Inertia::render('Dashboard', [
-        'user' => Auth::user(),
-        'randomCourses' => $randomCourses
-    ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [GetCoursesController::class, 'dashboard'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::resource('tutorRegistration', TutorDetailsController::class)
     ->middleware(['auth', 'verified'])
