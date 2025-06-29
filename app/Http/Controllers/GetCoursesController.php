@@ -61,13 +61,20 @@ class GetCoursesController extends Controller
             abort(403, 'This course is not available for viewing.');
         }
             
+        // Check if the current user has purchased this course with "paid" status
+        $isEnrolled = false;
+        if (Auth::check()) {
+            $isEnrolled = $course->hasPurchased(Auth::id());
+        }
+            
         // Format the thumbnail URL if needed
         if ($course->thumbnail && !filter_var($course->thumbnail, FILTER_VALIDATE_URL)) {
             $course->thumbnail = asset('storage/' . $course->thumbnail);
         }
             
         return Inertia::render('Courses/ViewCourse', [
-            'course' => $course
+            'course' => $course,
+            'isEnrolled' => $isEnrolled
         ]);
     }
 
