@@ -59,21 +59,29 @@ class LessonsController extends Controller
     public function store(Request $request)
     {
         try {
-            // Check file size before validation to provide a better error message
-            if ($request->hasFile('video_path') && $request->file('video_path')->getSize() > 2 * 1024 * 1024) {
-                return redirect()->back()->withErrors([
-                    'video_path' => 'Video file size exceeds the server limit of 2MB. Please use a smaller file or contact the administrator to increase the limit.'
-                ]);
-            }
+            // Log the incoming request data to see what's being sent
+            Log::info('Lesson store request data:', $request->all());
             
-            $validated = $request->validate([
+            $validationRules = [
                 'course_section_id' => 'required|exists:course_sections,id',
                 'title' => 'required|string|max:255',
                 'content_type' => 'required|in:video,pdf,text,quiz',
-                'content' => 'required|string',
                 'order' => 'required|integer|min:1',
-                'video_path' => $request->content_type == 'video' ? 'required|file|mimes:mp4,webm,ogg|max:2048' : 'nullable', // Reduced to 2MB
-            ]);
+            ];
+            
+            // Add conditional validation rules based on content type
+            if ($request->content_type === 'video') {
+                $validationRules['video_path'] = 'required|string|url';
+                $validationRules['content'] = 'nullable|string'; // Make content optional for videos
+            } else {
+                $validationRules['content'] = 'required|string';
+                $validationRules['video_path'] = 'nullable';
+            }
+            
+            // Log the validation rules we're using
+            Log::info('Validation rules:', $validationRules);
+            
+            $validated = $request->validate($validationRules);
 
             // Verify the section belongs to a course owned by the authenticated user
             $section = CourseSection::findOrFail($validated['course_section_id']);
@@ -81,21 +89,15 @@ class LessonsController extends Controller
                 ->where('user_id', Auth::id())
                 ->firstOrFail();
 
-            // Handle video upload store url for the video 
-            if ($request->hasFile('video_path')) {
-                $videoPath = $request->file('video_path')->store('lesson-videos', 'public');
-                $validated['video_path'] = $videoPath;
-            }
-
             // Create the lesson
             $lesson = Lesson::create($validated);
 
-            return redirect()->route('lessons.create.with.course', $course->id)
+            return redirect()->route('courses.show', $course->id)
                 ->with('success', 'Lesson added successfully!');
         } catch (\Exception $e) {
             Log::error('Error storing lesson: ' . $e->getMessage());
             return redirect()->back()->withErrors([
-                'error' => 'An error occurred while uploading. The file may be too large for the server to handle.'
+                'error' => 'An error occurred while creating the lesson: ' . $e->getMessage()
             ]);
         }
     }

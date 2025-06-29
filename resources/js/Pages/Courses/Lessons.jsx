@@ -37,8 +37,25 @@ export default function Lessons({ auth, course, sections, userCourses }) {
         }
     }, [sections]);
 
+    // Add this useEffect to handle content type changes
+    useEffect(() => {
+        if (data.content_type === 'video') {
+            // Set a default description for video content
+            setData('content', data.content || 'Video content');
+        }
+    }, [data.content_type]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        // Ensure content field is set for video content type
+        if (data.content_type === 'video' && !data.content) {
+            setData('content', 'Video content');
+        }
+        
+        // Log what we're sending
+        console.log('Submitting form data:', data);
+        
         post(route("lessons.store"));
     };
 
@@ -52,17 +69,15 @@ export default function Lessons({ auth, course, sections, userCourses }) {
         });
     };
 
+    // Update handleVideoChange to also update content if needed
     const handleVideoChange = (e) => {
-        const file = e.target.files[0];
-        setData("video_path", file);
-
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                setVideoPreview(e.target.result);
-            };
-            reader.readAsDataURL(file);
-        }
+        const url = e.target.value;
+        setData(prevData => ({
+            ...prevData,
+            video_path: url,
+            // Ensure content field is set for video type
+            content: prevData.content || 'Video content'
+        }));
     };
 
     const handleSectionChange = (e) => {
@@ -76,6 +91,25 @@ export default function Lessons({ auth, course, sections, userCourses }) {
 
     const handleCourseSelection = (e) => {
         setSelectedCourseId(e.target.value);
+    };
+
+    // Update the content type change handler
+    const handleContentTypeChange = (e) => {
+        const contentType = e.target.value;
+        
+        if (contentType === 'video') {
+            setData({
+                ...data,
+                content_type: contentType,
+                content: 'Video content'
+            });
+        } else {
+            setData({
+                ...data,
+                content_type: contentType,
+                content: ''
+            });
+        }
     };
 
     // Course Selection UI when no course is selected
@@ -603,6 +637,51 @@ export default function Lessons({ auth, course, sections, userCourses }) {
                                                 />
                                             </div>
 
+                                            {/* Section selection */}
+                                            <div>
+                                                <div className="flex items-center mb-2">
+                                                    <svg
+                                                        className="w-5 h-5 text-blue-600 mr-2 flex-shrink-0"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth="2"
+                                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                                                        />
+                                                    </svg>
+                                                    <InputLabel
+                                                        htmlFor="course_section_id"
+                                                        value="Select Section"
+                                                        className="text-gray-700 font-medium"
+                                                    />
+                                                </div>
+                                                <select
+                                                    id="course_section_id"
+                                                    name="course_section_id"
+                                                    value={data.course_section_id}
+                                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-blue-500 sm:text-sm rounded-md"
+                                                    onChange={handleSectionChange}
+                                                    required
+                                                >
+                                                    <option value="" disabled>
+                                                        Select a section
+                                                    </option>
+                                                    {sections.map((section) => (
+                                                        <option key={section.id} value={section.id}>
+                                                            {section.title}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                                <InputError
+                                                    message={errors.course_section_id}
+                                                    className="mt-2"
+                                                />
+                                            </div>
+
                                             {/* Content type selection */}
                                             <div>
                                                 <div className="flex items-center mb-2">
@@ -630,12 +709,7 @@ export default function Lessons({ auth, course, sections, userCourses }) {
                                                     name="content_type"
                                                     value={data.content_type}
                                                     className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-blue-500 sm:text-sm rounded-md"
-                                                    onChange={(e) =>
-                                                        setData(
-                                                            "content_type",
-                                                            e.target.value
-                                                        )
-                                                    }
+                                                    onChange={handleContentTypeChange}
                                                     required
                                                 >
                                                     <option value="text">
@@ -686,30 +760,26 @@ export default function Lessons({ auth, course, sections, userCourses }) {
                                                     />
                                                 ) : (
                                                     <div>
-                                                        <input
-                                                            type="file"
-                                                            accept="video/*"
-                                                            onChange={
-                                                                handleVideoChange
-                                                            }
-                                                            className="mt-1 block w-full text-sm text-gray-500
-                                                            file:mr-4 file:py-2 file:px-4
-                                                            file:rounded-md file:border-0
-                                                            file:text-sm file:font-semibold
-                                                            file:bg-blue-50 file:text-blue-700
-                                                            hover:file:bg-blue-100"
+                                                        <TextInput
+                                                            id="video_path"
+                                                            type="url"
+                                                            name="video_path"
+                                                            value={data.video_path || ''}
+                                                            className="mt-1 block w-full"
+                                                            placeholder="https://www.youtube.com/watch?v=..."
+                                                            onChange={handleVideoChange}
+                                                            required
                                                         />
-                                                        {videoPreview && (
-                                                            <div className="mt-2">
-                                                                <video
-                                                                    src={
-                                                                        videoPreview
-                                                                    }
-                                                                    controls
-                                                                    className="w-full rounded-md"
-                                                                />
-                                                            </div>
-                                                        )}
+                                                        {/* Add a hidden input for content */}
+                                                        <input 
+                                                            type="hidden" 
+                                                            name="content" 
+                                                            value={data.content || 'Video content'} 
+                                                        />
+                                                        <p className="text-sm text-gray-500 mt-1">
+                                                            Paste a YouTube video URL (e.g., https://www.youtube.com/watch?v=XXXXXXXXXXX)
+                                                        </p>
+                                                        <InputError message={errors.video_path} className="mt-2" />
                                                     </div>
                                                 )}
                                                 <InputError
