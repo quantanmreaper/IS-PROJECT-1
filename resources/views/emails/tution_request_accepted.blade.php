@@ -66,7 +66,7 @@
                         <td style="padding:0 32px 24px 32px;">
                             <p style="font-size:0.95rem;color:#64748b;text-align:center;margin:0;font-family:sans-serif;">
                                 Thank you for using our platform.<br>
-                                <span style="color:#2563eb;font-weight:600;">Strathmore Tution Platform</span>
+                                <span style="color:#2563eb;font-weight:600;">Peer To Peer Tution Platform</span>
                             </p>
                         </td>
                     </tr>

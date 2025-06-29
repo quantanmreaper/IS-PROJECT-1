@@ -76,7 +76,7 @@
                     </tr>
                 </table>
                 <div style="margin:24px 0 0 0;text-align:center;color:#b6c3d1;font-size:0.9rem;font-family:sans-serif;">
-                    &copy; {{ date('Y') }} Strathmore Tution Platform
+                    &copy; {{ date('Y') }} Peer To Peer Tution Platform
                 </div>
             </td>
         </tr>

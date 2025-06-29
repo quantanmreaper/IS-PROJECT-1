@@ -195,35 +195,7 @@ export default function Sidebar({ mobile, closeSidebar, user }) {
             ),
         },
 
-        {
-            href: route("units.index"),
-            label: "Units",
-            icon: (
-                <svg
-                    className="w-5 h-5 text-white-500"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M3 6v13a1 1 0 001 1h14a1 1 0 001-1V6"
-                    />
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M16 3v4a1 1 0 01-1 1H9a1 1 0 01-1-1V3"
-                    />
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M8 3h8"
-                    />
-                </svg>
-            ),
-        },
+       
         
         {
             id: "publish-course",
