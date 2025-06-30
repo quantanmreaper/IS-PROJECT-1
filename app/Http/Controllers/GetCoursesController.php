@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class GetCoursesController extends Controller
 {
@@ -29,7 +30,7 @@ class GetCoursesController extends Controller
                 }
                 return $course;
             });
-        
+
         return Inertia::render('Courses/AllCourses', [
             'courses' => $courses
         ]);
@@ -58,23 +59,23 @@ class GetCoursesController extends Controller
     {
         $course = Course::with(['seller', 'sections.lessons', 'reviews.user'])
             ->findOrFail($id);
-            
+
         // Check if the course is published
         if ($course->status !== 'published') {
             abort(403, 'This course is not available for viewing.');
         }
-            
+
         // Check if the current user has purchased this course with "paid" status
         $isEnrolled = false;
         if (Auth::check()) {
             $isEnrolled = $course->hasPurchased(Auth::id());
         }
-            
+
         // Format the thumbnail URL if needed
         if ($course->thumbnail && !filter_var($course->thumbnail, FILTER_VALIDATE_URL)) {
             $course->thumbnail = asset('storage/' . $course->thumbnail);
         }
-            
+
         return Inertia::render('Courses/ViewCourse', [
             'course' => $course,
             'isEnrolled' => $isEnrolled
@@ -104,7 +105,7 @@ class GetCoursesController extends Controller
     {
         //
     }
-    
+
     /**
      * Display the dashboard with random courses
      */
@@ -119,19 +120,33 @@ class GetCoursesController extends Controller
             $metrics['learner'] = [
                 'total_courses_enrolled' => CoursePurchase::where('user_id', $user->id)->count(),
                 'total_sessions_booked' => TutingSession::where('tutee_id', $user->id)->count(),
-                'total_reviews_written' => $user->reviews()->count(),
+                'total_reviews_written' => method_exists($user, 'reviews') ? $user->reviews()->count() : 0,
             ];
 
             // Tutor metrics
             if ($user->is_tutor) {
+                $sessions = TutingSession::where('tutor_id', $user->id)->get();
+                $hourlyRate = optional($user->TutorDetails)->hourly_rate;
+                $hourlyRate = is_numeric($hourlyRate) ? $hourlyRate : 0;
+                $totalEarnings = 0;
+                foreach ($sessions as $session) {
+                    if ($session->scheduled_start && $session->scheduled_stop) {
+                        try {
+                            $start = $session->scheduled_start instanceof \DateTimeInterface ? $session->scheduled_start : Carbon::parse($session->scheduled_start);
+                            $stop = $session->scheduled_stop instanceof \DateTimeInterface ? $session->scheduled_stop : Carbon::parse($session->scheduled_stop);
+                            $hours = $stop->greaterThan($start) ? $stop->diffInHours($start) : 0;
+                            if ($hours > 0) {
+                                $totalEarnings += $hourlyRate * $hours;
+                            }
+                        } catch (\Exception $e) {
+                            // skip invalid datetimes
+                        }
+                    }
+                }
                 $metrics['tutor'] = [
-                    'total_sessions_hosted' => TutingSession::where('tutor_id', $user->id)->count(),
-                    'total_earnings' => TutingSession::where('tutor_id', $user->id)
-                        ->join('users', 'tuting_sessions.tutor_id', '=', 'users.id')
-                        ->join('tutor_details', 'users.id', '=', 'tutor_details.tutor_id')
-                        ->selectRaw('SUM(tutor_details.hourly_rate * TIMESTAMPDIFF(HOUR, scheduled_start, scheduled_stop)) as earnings')
-                        ->value('earnings') ?? 0,
-                    'total_courses_created' => $user->soldCourses()->count(),
+                    'total_sessions_hosted' => $sessions->count(),
+                    'total_earnings' => round($totalEarnings, 2),
+                    'total_courses_created' => method_exists($user, 'soldCourses') ? $user->soldCourses()->count() : 0,
                 ];
             }
 
@@ -151,7 +166,7 @@ class GetCoursesController extends Controller
             'metrics' => $metrics,
         ]);
     }
-    
+
     /**
      * Get random courses for dashboard
      */
@@ -171,7 +186,7 @@ class GetCoursesController extends Controller
                 }
                 return $course;
             });
-            
+
         return $randomCourses;
     }
 }
