@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\CoursePurchase;
+use App\Models\TutingSession;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
@@ -108,10 +111,44 @@ class GetCoursesController extends Controller
     public function dashboard()
     {
         $randomCourses = $this->getRandomForDashboard();
-        
+        $user = Auth::user();
+        $metrics = [];
+
+        if ($user) {
+            // Learner metrics (all users)
+            $metrics['learner'] = [
+                'total_courses_enrolled' => CoursePurchase::where('user_id', $user->id)->count(),
+                'total_sessions_booked' => TutingSession::where('tutee_id', $user->id)->count(),
+                'total_reviews_written' => $user->reviews()->count(),
+            ];
+
+            // Tutor metrics
+            if ($user->is_tutor) {
+                $metrics['tutor'] = [
+                    'total_sessions_hosted' => TutingSession::where('tutor_id', $user->id)->count(),
+                    'total_earnings' => TutingSession::where('tutor_id', $user->id)
+                        ->join('users', 'tuting_sessions.tutor_id', '=', 'users.id')
+                        ->join('tutor_details', 'users.id', '=', 'tutor_details.tutor_id')
+                        ->selectRaw('SUM(tutor_details.hourly_rate * TIMESTAMPDIFF(HOUR, scheduled_start, scheduled_stop)) as earnings')
+                        ->value('earnings') ?? 0,
+                    'total_courses_created' => $user->soldCourses()->count(),
+                ];
+            }
+
+            // Admin metrics
+            if ($user->user_type === 'admin') {
+                $metrics['admin'] = [
+                    'total_users' => User::count(),
+                    'total_courses' => \App\Models\Course::count(),
+                    'total_sessions' => TutingSession::count(),
+                ];
+            }
+        }
+
         return Inertia::render('Dashboard', [
-            'user' => Auth::user(),
-            'randomCourses' => $randomCourses
+            'user' => $user,
+            'randomCourses' => $randomCourses,
+            'metrics' => $metrics,
         ]);
     }
     

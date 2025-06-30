@@ -68,7 +68,7 @@ class TutorBookingController extends Controller
         $intasend = new \App\Services\IntaSendCheckoutService();
         $host = config('app.url'); // Or set your public host URL
         $redirectUrl = route('payment.callback'); // Define this route for payment callback/redirect
-        $refOrderNumber = 'booking_' . uniqid(); // Only allowed characters
+        $refOrderNumber = 'booking_' . uniqid();
         $userName = Auth::user()->name;
         $userEmail = Auth::user()->email;
         $userPhone = Auth::user()->phone_number ?? '';
@@ -86,37 +86,50 @@ class TutorBookingController extends Controller
             'session_id' => $session->id,
         ]);
 
+        // Save session and prepare summary
+        return Inertia::render('PaymentSummary', [
+            'payment' => [
+                'item_type' => 'tutoring',
+                'item_title' => $tutor->name . ' Tutoring Session',
+                'amount' => $amount,
+                'instructor_name' => $tutor->name,
+                'session_datetime' => $request->input('session_datetime'),
+                'ref' => $refOrderNumber,
+                'confirm_url' => route('bookTutor.payment.confirm', $session->id),
+                'cancel_url' => route('bookTutor.create', $tutor->id),
+            ]
+        ]);
+    }
+
+    // Confirm and actually initiate IntaSend checkout (step 2)
+    public function confirmPayment(Request $request, $sessionId)
+    {
+        $session = TutingSession::findOrFail($sessionId);
+        $tutor = $session->tutor;
+        $user = Auth::user();
+        $amount = optional($tutor->TutorDetails)->hourly_rate * ($session->scheduled_stop->diffInHours($session->scheduled_start));
+        $intasend = new \App\Services\IntaSendCheckoutService();
+        $host = config('app.url');
+        $redirectUrl = route('payment.callback');
         try {
             $resp = $intasend->createCheckout(
                 $amount,
                 'KES',
-                $userName,
-                $userEmail,
-                $userPhone,
+                $user->name,
+                $user->email,
+                $user->phone_number ?? '',
                 $host,
                 $redirectUrl,
-                $refOrderNumber
+                'booking_' . $session->id
             );
-            Log::info('IntaSend payment created', [
-                'checkout_url' => $resp->url,
-                'response' => $resp,
-                'session_id' => $session->id,
-            ]);
-            // Always return JSON for AJAX/Inertia requests
-            if ($request->expectsJson() || $request->wantsJson() || $request->header('X-Inertia')) {
-                return response()->json(['redirect' => $resp->url]);
-            }
-            // Only do a real redirect for normal browser requests
-            return redirect()->away($resp->url);
+            return response()->json(['redirect' => $resp->url]);
         } catch (\Exception $e) {
-            Log::error('IntaSend payment initiation failed', [
+            Log::error('Tutoring payment initiation failed', [
                 'error' => $e->getMessage(),
                 'session_id' => $session->id,
+                'user_id' => $user->id,
             ]);
-            if ($request->expectsJson() || $request->wantsJson() || $request->header('X-Inertia')) {
-                return response()->json(['error' => 'Failed to initiate payment. Please try again.'], 500);
-            }
-            return redirect()->back()->withErrors(['payment' => 'Failed to initiate payment. Please try again.']);
+            return response()->json(['error' => 'Failed to initiate payment. Please try again.'], 500);
         }
     }
 

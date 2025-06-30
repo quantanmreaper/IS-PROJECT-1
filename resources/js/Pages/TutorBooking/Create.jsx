@@ -1,9 +1,14 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
 import React, { useState } from "react";
 
-export default function TutorBookingCreate({ tutor, units }) {
+export default function TutorBookingCreate({
+    tutor,
+    units,
+    unavailableTimes = [],
+    availability = {},
+}) {
     const { data, setData, post, processing, errors, reset } = useForm({
         unit_id: "",
         session_datetime: "",
@@ -11,38 +16,23 @@ export default function TutorBookingCreate({ tutor, units }) {
         notes: "",
     });
     const [loading, setLoading] = useState(false);
+    const [dateError, setDateError] = useState("");
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setData(name, value);
     };
 
-    const handleSubmit = async (e) => {
+    const handleDateChange = (e) => {
+        setData("session_datetime", e.target.value);
+    };
+
+    const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
-        try {
-            const response = await fetch(route("bookTutor.store", tutor.id), {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute("content"),
-                    "X-Requested-With": "XMLHttpRequest",
-                },
-                body: JSON.stringify(data),
-            });
-            const result = await response.json();
-            if (result.redirect) {
-                window.location.href = result.redirect;
-            } else if (result.error) {
-                setLoading(false);
-                alert(result.error);
-            }
-        } catch (err) {
-            setLoading(false);
-            alert("Failed to book session. Please try again.");
-        }
+        router.post(route("bookTutor.store", tutor.id), data, {
+            onFinish: () => setLoading(false),
+        });
     };
 
     return (
@@ -153,10 +143,19 @@ export default function TutorBookingCreate({ tutor, units }) {
                                     type="datetime-local"
                                     name="session_datetime"
                                     value={data.session_datetime}
-                                    onChange={handleChange}
+                                    onChange={handleDateChange}
                                     className="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition bg-white"
                                     required
                                 />
+                                {dateError && (
+                                    <div className="text-red-500 text-sm mt-1">
+                                        {dateError}
+                                    </div>
+                                )}
+                                <div className="text-xs text-gray-500 mt-1">
+                                    All times are in Africa/Nairobi. Please
+                                    select an available slot.
+                                </div>
                                 {errors.session_datetime && (
                                     <div className="text-red-500 text-sm mt-1">
                                         {errors.session_datetime}

@@ -22,6 +22,11 @@ class TutingSession extends Model
         'actual_stop',
     ];
 
+    protected $casts = [
+        'scheduled_start' => 'datetime',
+        'scheduled_stop' => 'datetime',
+    ];
+
     public function tutor()
     {
         return $this->belongsTo(User::class, 'tutor_id');

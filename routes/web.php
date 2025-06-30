@@ -125,6 +125,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Course payment routes
     Route::post('/courses/{course}/purchase', [CoursePurchaseController::class, 'purchase'])->name('courses.purchase');
+    Route::post('/courses/{course}/purchase/confirm', [CoursePurchaseController::class, 'confirm'])->name('courses.purchase.confirm');
     Route::get('/courses/{course}/payment-callback', [CoursePurchaseController::class, 'callback'])->name('courses.payment.callback');
 });
 
@@ -133,5 +134,6 @@ Route::get('/bookTutor/thank-you', function () {
     return Inertia::render('TutorBooking/Booked'); // or your custom thank you/confirmation page
 })->name('payment.callback');
 
+Route::post('bookTutor/{session}/payment/confirm', [TutorBookingController::class, 'confirmPayment'])->name('bookTutor.payment.confirm');
 
 require __DIR__ . '/auth.php';

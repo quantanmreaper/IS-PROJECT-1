@@ -11,13 +11,12 @@ use Inertia\Inertia;
 
 class CoursePurchaseController extends Controller
 {
-    // Initiate payment for a course
+    // Initiate payment for a course (step 1: show summary)
     public function purchase(Request $request, $courseId)
     {
         $course = Course::findOrFail($courseId);
         $user = Auth::user();
         if ($course->price <= 0) {
-            // Free course: just create purchase record
             CoursePurchase::firstOrCreate([
                 'user_id' => $user->id,
                 'course_id' => $course->id,
@@ -27,34 +26,50 @@ class CoursePurchaseController extends Controller
             ]);
             return response()->json(['success' => true, 'message' => 'Enrolled for free.']);
         }
-        // Paid course: initiate IntaSend payment
+        $refOrderNumber = 'course_' . $course->id . '_' . uniqid();
+        // Save pending purchase
+        CoursePurchase::updateOrCreate([
+            'user_id' => $user->id,
+            'course_id' => $course->id,
+        ], [
+            'amount' => $course->price,
+            'status' => 'pending',
+            'transaction_ref' => $refOrderNumber,
+        ]);
+        // Show payment summary page
+        return Inertia::render('PaymentSummary', [
+            'payment' => [
+                'item_type' => 'course',
+                'item_title' => $course->title,
+                'amount' => $course->price,
+                'instructor_name' => $course->seller->name,
+                'ref' => $refOrderNumber,
+                'confirm_url' => route('courses.purchase.confirm', $course->id),
+                'cancel_url' => route('courses.show', $course->id),
+            ]
+        ]);
+    }
+
+    // Confirm and actually initiate IntaSend checkout (step 2)
+    public function confirm(Request $request, $courseId)
+    {
+        $course = Course::findOrFail($courseId);
+        $user = Auth::user();
+        $purchase = CoursePurchase::where('user_id', $user->id)->where('course_id', $course->id)->firstOrFail();
         $intasend = new \App\Services\IntaSendCheckoutService();
         $host = config('app.url');
         $redirectUrl = route('courses.payment.callback', $course->id);
-        $refOrderNumber = 'course_' . $course->id . '_' . uniqid();
-        $userName = $user->name;
-        $userEmail = $user->email;
-        $userPhone = $user->phone_number ?? '';
         try {
             $resp = $intasend->createCheckout(
                 $course->price,
                 'KES',
-                $userName,
-                $userEmail,
-                $userPhone,
+                $user->name,
+                $user->email,
+                $user->phone_number ?? '',
                 $host,
                 $redirectUrl,
-                $refOrderNumber
+                $purchase->transaction_ref
             );
-            // Optionally, create a pending purchase record here
-            CoursePurchase::updateOrCreate([
-                'user_id' => $user->id,
-                'course_id' => $course->id,
-            ], [
-                'amount' => $course->price,
-                'status' => 'pending',
-                'transaction_ref' => $refOrderNumber,
-            ]);
             return response()->json(['redirect' => $resp->url]);
         } catch (\Exception $e) {
             Log::error('Course payment initiation failed', [
