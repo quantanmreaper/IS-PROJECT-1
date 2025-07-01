@@ -2,9 +2,11 @@ import React from "react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, Link } from "@inertiajs/react";
 import RandomCourses from "@/Components/RandomCourses";
+import LearnerMetrics from '@/Components/LearnerMetrics';
+import TutorMetrics from '@/Components/TutorMetrics';
 
 export default function Dashboard() {
-    const { user, randomCourses = [] } = usePage().props;
+    const { user, randomCourses = [], metrics } = usePage().props;
 
     // Quick actions for the dashboard
     const quickActions = [
@@ -104,6 +106,16 @@ export default function Dashboard() {
                     <div className="mb-10">
                         <RandomCourses courses={randomCourses} />
                     </div>
+
+                    {/* Learner Metrics Section */}
+                    {metrics?.learner && (
+                        <LearnerMetrics metrics={metrics.learner} />
+                    )}
+
+                    {/* Tutor Metrics Section - Only shown if user is a tutor */}
+                    {metrics?.tutor && user.is_tutor && (
+                        <TutorMetrics metrics={metrics.tutor} />
+                    )}
 
                 </div>
             </div>

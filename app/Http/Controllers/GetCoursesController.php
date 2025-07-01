@@ -115,7 +115,7 @@ class GetCoursesController extends Controller
         $user = Auth::user();
         $metrics = [];
 
-        if ($user) {
+        if ($user->user_type === 'standard user') {
             // Learner metrics (all users)
             $metrics['learner'] = [
                 'total_courses_enrolled' => CoursePurchase::where('user_id', $user->id)->count(),
