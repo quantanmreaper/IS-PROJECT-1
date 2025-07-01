@@ -17,6 +17,7 @@ export default function LearnerMetrics({ metrics }) {
             ),
             bgColor: 'bg-blue-50',
             accentColor: 'bg-blue-100',
+            borderColor: 'border-blue-200',
             textColor: 'text-blue-600'
         },
         {
@@ -30,6 +31,7 @@ export default function LearnerMetrics({ metrics }) {
             ),
             bgColor: 'bg-blue-50',
             accentColor: 'bg-blue-100',
+            borderColor: 'border-blue-200',
             textColor: 'text-blue-600'
         },
         {
@@ -43,6 +45,7 @@ export default function LearnerMetrics({ metrics }) {
             ),
             bgColor: 'bg-blue-50',
             accentColor: 'bg-blue-100',
+            borderColor: 'border-blue-200',
             textColor: 'text-blue-600'
         }
     ];
@@ -60,7 +63,7 @@ export default function LearnerMetrics({ metrics }) {
                 {metricCards.map((card, index) => (
                     <div 
                         key={index}
-                        className={`${card.bgColor} rounded-xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-all duration-300 hover:translate-y-[-4px]`}
+                        className={`${card.bgColor} rounded-xl shadow-sm border ${card.borderColor} overflow-hidden group hover:shadow-md transition-all duration-300 hover:translate-y-[-4px]`}
                     >
                         <div className="p-6">
                             <div className="flex items-center mb-4">
