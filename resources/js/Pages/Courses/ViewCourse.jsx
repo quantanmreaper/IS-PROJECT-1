@@ -52,6 +52,13 @@ export default function ViewCourse({ auth, course, isEnrolled }) {
     // Submit review handler
     const handleSubmitReview = async (e) => {
         e.preventDefault();
+        
+        // Check if user is enrolled
+        if (!enrolled) {
+            setError("You must be enrolled in this course to leave a review.");
+            return;
+        }
+        
         setIsSubmitting(true);
         setError("");
 
@@ -680,37 +687,37 @@ export default function ViewCourse({ auth, course, isEnrolled }) {
                                 )}
                             </div>
 
-                            {/* Add Review Button */}
-                            <div className="mb-8 text-center">
-                                {!showReviewForm ? (
-                                    <button
-                                        onClick={() => setShowReviewForm(true)}
-                                        className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 group"
-                                    >
-                                        <svg
-                                            className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                            />
-                                        </svg>
-                                        Add a Review
-                                    </button>
-                                ) : null}
-                            </div>
+                                        {/* Add Review Button */}
+            <div className="mb-8 text-center">
+                {!showReviewForm && enrolled ? (
+                    <button
+                        onClick={() => setShowReviewForm(true)}
+                        className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 group"
+                    >
+                        <svg
+                            className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            />
+                        </svg>
+                        Add a Review
+                    </button>
+                ) : null}
+            </div>
 
-                            {/* Inline Review Form */}
-                            {showReviewForm && (
-                                <div className="bg-blue-50 rounded-lg p-6 mb-8 border border-blue-100 shadow-sm">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                                        Write Your Review
-                                    </h3>
+                                        {/* Inline Review Form */}
+            {showReviewForm && enrolled && (
+                <div className="bg-blue-50 rounded-lg p-6 mb-8 border border-blue-100 shadow-sm">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                        Write Your Review
+                    </h3>
                                     <form onSubmit={handleSubmitReview}>
                                         <div className="mb-5">
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -942,27 +949,29 @@ export default function ViewCourse({ auth, course, isEnrolled }) {
                                         No reviews yet
                                     </h3>
                                     <p className="mt-1 text-sm text-gray-500 mb-4">
-                                        Be the first to review this course!
+                                        {enrolled ? "Be the first to review this course!" : "Enroll in this course to leave a review."}
                                     </p>
-                                    <button
-                                        onClick={() => setShowReviewForm(true)}
-                                        className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
-                                    >
-                                        <svg
-                                            className="w-5 h-5 mr-2"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
+                                    {enrolled && (
+                                        <button
+                                            onClick={() => setShowReviewForm(true)}
+                                            className="inline-flex items-center px-4 py-2 border border-blue-600 text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
                                         >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth="2"
-                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                            />
-                                        </svg>
-                                        Write First Review
-                                    </button>
+                                            <svg
+                                                className="w-5 h-5 mr-2"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2"
+                                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                                />
+                                            </svg>
+                                            Write First Review
+                                        </button>
+                                    )}
                                 </div>
                             )}
                         </div>
