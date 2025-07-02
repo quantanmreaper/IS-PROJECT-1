@@ -129,19 +129,21 @@ export default function AdminDashboard({ metrics }) {
                             </div>
                         </div>
                         <div className="p-6">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <button className="flex items-center justify-center p-4 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors duration-200 group">
-                                    <svg className="w-6 h-6 text-blue-600 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                    </svg>
-                                    <span className="font-medium text-gray-800">Delete User</span>
-                                </button>
-                                <button className="flex items-center justify-center p-4 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors duration-200 group">
-                                    <svg className="w-6 h-6 text-blue-600 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
-                                    <span className="font-medium text-gray-800">View Reports</span>
-                                </button>
+                            <div className="flex justify-center items-center">
+                                <div className="grid grid-cols-2 gap-4 max-w-md">
+                                    <button className="flex items-center justify-center p-4 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors duration-200 group">
+                                        <svg className="w-6 h-6 text-blue-600 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                        </svg>
+                                        <span className="font-medium text-gray-800">Delete User</span>
+                                    </button>
+                                    <button className="flex items-center justify-center p-4 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 transition-colors duration-200 group">
+                                        <svg className="w-6 h-6 text-blue-600 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                        </svg>
+                                        <span className="font-medium text-gray-800">View Reports</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
