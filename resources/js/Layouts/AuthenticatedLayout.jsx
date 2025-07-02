@@ -149,7 +149,15 @@ export default function AuthenticatedLayout({
                                 <Dropdown.Link href={route('profile.edit')}>
                                     Profile
                                 </Dropdown.Link>
-                                <Dropdown.Link href={route('logout')} method="post" as="button">
+                                <Dropdown.Link 
+                                href={route('logout')} 
+                                method="post" 
+                                as="button"
+                                 onClick={() => {
+                                        // Wait a moment to allow logout to complete, then reload
+                                        setTimeout(() => window.location.reload(), 500);
+                                    }}
+                                >
                                     Log Out
                                 </Dropdown.Link>
                             </Dropdown.Content>
