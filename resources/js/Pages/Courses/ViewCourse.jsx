@@ -4,7 +4,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import axios from "axios";
 import { router } from "@inertiajs/react";
 import toastr from "toastr";
-import YouTubeEmbed from '@/Components/YouTubeEmbed';
+import YouTubeEmbed from "@/Components/YouTubeEmbed";
 
 export default function ViewCourse({ auth, course, isEnrolled }) {
     // State for active curriculum section
@@ -80,29 +80,11 @@ export default function ViewCourse({ auth, course, isEnrolled }) {
     };
 
     // Enroll handler
-    const handleEnroll = async () => {
+    const handleEnroll = () => {
         if (enrolled || enrolling) return;
         setEnrolling(true);
-        try {
-            const response = await axios.post(`/courses/${course.id}/purchase`);
-            if (response.data.redirect) {
-                toastr.info("Redirecting to payment...");
-                window.location.href = response.data.redirect;
-            } else if (response.data.success) {
-                toastr.success(
-                    response.data.message || "Enrolled successfully!"
-                );
-                setEnrolled(true);
-            } else if (response.data.error) {
-                toastr.error(response.data.error);
-            }
-        } catch (err) {
-            toastr.error(
-                err.response?.data?.error || "Failed to initiate payment."
-            );
-        } finally {
-            setEnrolling(false);
-        }
+        // Instead of direct payment, go to summary page (handled by backend Inertia render)
+        window.location.href = `/courses/${course.id}/purchase`;
     };
 
     // Handle lesson click
@@ -458,20 +440,87 @@ export default function ViewCourse({ auth, course, isEnrolled }) {
                                             </button>
                                             {activeSection === index && (
                                                 <div className="bg-gray-50 border-t border-gray-200">
-                                                    {section.lessons.map((lesson, lessonIndex) => (
-                                                        <div
-                                                            key={lesson.id}
-                                                            className={`px-5 py-3 border-b last:border-b-0 border-gray-200 flex justify-between items-center hover:bg-blue-50 transition-colors duration-200 group ${(enrolled || lesson.is_free) ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-                                                            onClick={() => handleLessonClick(lesson)}
-                                                        >
-                                                            <div className="flex items-center flex-1 min-w-0">
-                                                                {/* If enrolled or lesson is free, show content */}
-                                                                {(enrolled || lesson.is_free) ? (
-                                                                    <>
-                                                                        <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center mr-3">
-                                                                            {lesson.content_type === 'video' && (
+                                                    {section.lessons.map(
+                                                        (
+                                                            lesson,
+                                                            lessonIndex
+                                                        ) => (
+                                                            <div
+                                                                key={lesson.id}
+                                                                className={`px-5 py-3 border-b last:border-b-0 border-gray-200 flex justify-between items-center hover:bg-blue-50 transition-colors duration-200 group ${
+                                                                    enrolled ||
+                                                                    lesson.is_free
+                                                                        ? "cursor-pointer"
+                                                                        : "cursor-not-allowed"
+                                                                }`}
+                                                                onClick={() =>
+                                                                    handleLessonClick(
+                                                                        lesson
+                                                                    )
+                                                                }
+                                                            >
+                                                                <div className="flex items-center flex-1 min-w-0">
+                                                                    {/* If enrolled or lesson is free, show content */}
+                                                                    {enrolled ||
+                                                                    lesson.is_free ? (
+                                                                        <>
+                                                                            <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center mr-3">
+                                                                                {lesson.content_type ===
+                                                                                    "video" && (
+                                                                                    <svg
+                                                                                        className="w-5 h-5 text-blue-600"
+                                                                                        fill="none"
+                                                                                        stroke="currentColor"
+                                                                                        viewBox="0 0 24 24"
+                                                                                    >
+                                                                                        <path
+                                                                                            strokeLinecap="round"
+                                                                                            strokeLinejoin="round"
+                                                                                            strokeWidth="2"
+                                                                                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                                                                                        />
+                                                                                        <path
+                                                                                            strokeLinecap="round"
+                                                                                            strokeLinejoin="round"
+                                                                                            strokeWidth="2"
+                                                                                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                                                        />
+                                                                                    </svg>
+                                                                                )}
+                                                                            </div>
+                                                                            <div className="min-w-0 flex-1">
+                                                                                <div className="flex items-center">
+                                                                                    <span className="text-sm font-medium text-gray-900 truncate mr-2 group-hover:text-blue-700 transition-colors duration-200">
+                                                                                        {
+                                                                                            lesson.title
+                                                                                        }
+                                                                                    </span>
+                                                                                    {lesson.is_free && (
+                                                                                        <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-2">
+                                                                                            Free
+                                                                                        </span>
+                                                                                    )}
+                                                                                </div>
+                                                                                {lesson.content_type && (
+                                                                                    <p className="text-xs text-gray-500 mt-0.5">
+                                                                                        {lesson.content_type
+                                                                                            .charAt(
+                                                                                                0
+                                                                                            )
+                                                                                            .toUpperCase() +
+                                                                                            lesson.content_type.slice(
+                                                                                                1
+                                                                                            )}
+                                                                                    </p>
+                                                                                )}
+                                                                            </div>
+                                                                        </>
+                                                                    ) : (
+                                                                        // For non-enrolled users, show locked content
+                                                                        <>
+                                                                            <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center mr-3">
                                                                                 <svg
-                                                                                    className="w-5 h-5 text-blue-600"
+                                                                                    className="w-5 h-5 text-gray-400"
                                                                                     fill="none"
                                                                                     stroke="currentColor"
                                                                                     viewBox="0 0 24 24"
@@ -480,42 +529,39 @@ export default function ViewCourse({ auth, course, isEnrolled }) {
                                                                                         strokeLinecap="round"
                                                                                         strokeLinejoin="round"
                                                                                         strokeWidth="2"
-                                                                                        d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                                                                                    />
-                                                                                    <path
-                                                                                        strokeLinecap="round"
-                                                                                        strokeLinejoin="round"
-                                                                                        strokeWidth="2"
-                                                                                        d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                                                                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                                                                                     />
                                                                                 </svg>
-                                                                            )}
-                                                                        </div>
-                                                                        <div className="min-w-0 flex-1">
-                                                                            <div className="flex items-center">
-                                                                                <span className="text-sm font-medium text-gray-900 truncate mr-2 group-hover:text-blue-700 transition-colors duration-200">
-                                                                                    {lesson.title}
-                                                                                </span>
-                                                                                {lesson.is_free && (
-                                                                                    <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-2">
-                                                                                        Free
-                                                                                    </span>
-                                                                                )}
                                                                             </div>
-                                                                            {lesson.content_type && (
+                                                                            <div className="min-w-0 flex-1">
+                                                                                <div className="flex items-center">
+                                                                                    <span className="text-sm font-medium text-gray-400 truncate mr-2">
+                                                                                        {
+                                                                                            lesson.title
+                                                                                        }
+                                                                                    </span>
+                                                                                    {lesson.is_free && (
+                                                                                        <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-2">
+                                                                                            Free
+                                                                                        </span>
+                                                                                    )}
+                                                                                </div>
                                                                                 <p className="text-xs text-gray-500 mt-0.5">
-                                                                                    {lesson.content_type
-                                                                                        .charAt(0)
-                                                                                        .toUpperCase() +
-                                                                                        lesson.content_type.slice(1)}
+                                                                                    Enroll
+                                                                                    to
+                                                                                    unlock
+                                                                                    this
+                                                                                    content
                                                                                 </p>
-                                                                            )}
-                                                                        </div>
-                                                                    </>
-                                                                ) : (
-                                                                    // For non-enrolled users, show locked content
-                                                                    <>
-                                                                        <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center mr-3">
+                                                                            </div>
+                                                                        </>
+                                                                    )}
+                                                                </div>
+
+                                                                {/* Lock icon for non-enrolled users */}
+                                                                {!enrolled &&
+                                                                    !lesson.is_free && (
+                                                                        <div className="ml-4">
                                                                             <svg
                                                                                 className="w-5 h-5 text-gray-400"
                                                                                 fill="none"
@@ -530,45 +576,10 @@ export default function ViewCourse({ auth, course, isEnrolled }) {
                                                                                 />
                                                                             </svg>
                                                                         </div>
-                                                                        <div className="min-w-0 flex-1">
-                                                                            <div className="flex items-center">
-                                                                                <span className="text-sm font-medium text-gray-400 truncate mr-2">
-                                                                                    {lesson.title}
-                                                                                </span>
-                                                                                {lesson.is_free && (
-                                                                                    <span className="bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full ml-2">
-                                                                                        Free
-                                                                                    </span>
-                                                                                )}
-                                                                            </div>
-                                                                            <p className="text-xs text-gray-500 mt-0.5">
-                                                                                Enroll to unlock this content
-                                                                            </p>
-                                                                        </div>
-                                                                    </>
-                                                                )}
+                                                                    )}
                                                             </div>
-                                                            
-                                                            {/* Lock icon for non-enrolled users */}
-                                                            {!enrolled && !lesson.is_free && (
-                                                                <div className="ml-4">
-                                                                    <svg
-                                                                        className="w-5 h-5 text-gray-400"
-                                                                        fill="none"
-                                                                        stroke="currentColor"
-                                                                        viewBox="0 0 24 24"
-                                                                    >
-                                                                        <path
-                                                                            strokeLinecap="round"
-                                                                            strokeLinejoin="round"
-                                                                            strokeWidth="2"
-                                                                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                                                                        />
-                                                                    </svg>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    ))}
+                                                        )
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -605,14 +616,28 @@ export default function ViewCourse({ auth, course, isEnrolled }) {
                         <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6 flex items-center justify-between">
                             <div className="flex items-center">
                                 <div className="bg-blue-100 p-2 rounded-full mr-3">
-                                    <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-                                              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    <svg
+                                        className="w-6 h-6 text-blue-600"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth="2"
+                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                        />
                                     </svg>
                                 </div>
                                 <div>
-                                    <h3 className="font-medium text-gray-900">Enroll to access full course content</h3>
-                                    <p className="text-sm text-gray-600">This course requires enrollment to view all lessons and materials.</p>
+                                    <h3 className="font-medium text-gray-900">
+                                        Enroll to access full course content
+                                    </h3>
+                                    <p className="text-sm text-gray-600">
+                                        This course requires enrollment to view
+                                        all lessons and materials.
+                                    </p>
                                 </div>
                             </div>
                             <button
@@ -622,9 +647,24 @@ export default function ViewCourse({ auth, course, isEnrolled }) {
                             >
                                 {enrolling ? (
                                     <>
-                                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        <svg
+                                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
                                         </svg>
                                         Processing...
                                     </>
@@ -643,21 +683,31 @@ export default function ViewCourse({ auth, course, isEnrolled }) {
                                         {activeLesson.title}
                                     </h2>
                                     <span className="bg-blue-100 text-blue-800 text-xs font-medium px-3 py-1 rounded-full">
-                                        {activeLesson.content_type.charAt(0).toUpperCase() + activeLesson.content_type.slice(1)}
+                                        {activeLesson.content_type
+                                            .charAt(0)
+                                            .toUpperCase() +
+                                            activeLesson.content_type.slice(1)}
                                     </span>
                                 </div>
 
                                 {/* Video Content */}
-                                {activeLesson.content_type === 'video' && activeLesson.video_path && (
-                                    <div className="mb-6">
-                                        <YouTubeEmbed url={activeLesson.video_path} />
-                                    </div>
-                                )}
+                                {activeLesson.content_type === "video" &&
+                                    activeLesson.video_path && (
+                                        <div className="mb-6">
+                                            <YouTubeEmbed
+                                                url={activeLesson.video_path}
+                                            />
+                                        </div>
+                                    )}
 
                                 {/* Text Content */}
                                 {activeLesson.content && (
                                     <div className="prose prose-blue max-w-none">
-                                        <div dangerouslySetInnerHTML={{ __html: activeLesson.content }} />
+                                        <div
+                                            dangerouslySetInnerHTML={{
+                                                __html: activeLesson.content,
+                                            }}
+                                        />
                                     </div>
                                 )}
                             </div>

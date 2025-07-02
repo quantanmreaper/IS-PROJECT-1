@@ -124,7 +124,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/courses/{course}/reviews/{review}', [CourseReviewController::class, 'destroy'])->name('course.reviews.destroy');
 
     // Course payment routes
-    Route::post('/courses/{course}/purchase', [CoursePurchaseController::class, 'purchase'])->name('courses.purchase');
+    Route::match(['get', 'post'], '/courses/{course}/purchase', [CoursePurchaseController::class, 'purchase'])->name('courses.purchase');
     Route::post('/courses/{course}/purchase/confirm', [CoursePurchaseController::class, 'confirm'])->name('courses.purchase.confirm');
     Route::get('/courses/{course}/payment-callback', [CoursePurchaseController::class, 'callback'])->name('courses.payment.callback');
 });

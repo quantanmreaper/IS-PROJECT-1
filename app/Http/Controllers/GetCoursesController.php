@@ -116,11 +116,29 @@ class GetCoursesController extends Controller
         $metrics = [];
 
         if ($user) {
+            // Always initialize all metrics keys to avoid undefined index errors
+            $metrics['learner'] = [
+                'total_courses_enrolled' => 0,
+                'total_sessions_booked' => 0,
+                'total_reviews_written' => 0,
+                'total_courses_created' => 0,
+            ];
+            $metrics['tutor'] = [
+                'total_sessions_hosted' => 0,
+                'total_earnings' => 0,
+            ];
+            $metrics['admin'] = [
+                'total_users' => 0,
+                'total_courses' => 0,
+                'total_sessions' => 0,
+            ];
+
             // Learner metrics (all users)
             $metrics['learner'] = [
                 'total_courses_enrolled' => CoursePurchase::where('user_id', $user->id)->count(),
                 'total_sessions_booked' => TutingSession::where('tutee_id', $user->id)->count(),
-                'total_reviews_written' => method_exists($user, 'reviews') ? $user->reviews()->count() : 0,
+                // 'total_reviews_written' => method_exists($user, 'reviews') ? $user->reviews()->count() : 0,
+                // 'total_courses_created' => method_exists($user, 'soldCourses') ? $user->soldCourses()->count() : 0,
             ];
 
             // Tutor metrics
@@ -132,11 +150,13 @@ class GetCoursesController extends Controller
                 foreach ($sessions as $session) {
                     if ($session->scheduled_start && $session->scheduled_stop) {
                         try {
-                            $start = $session->scheduled_start instanceof \DateTimeInterface ? $session->scheduled_start : Carbon::parse($session->scheduled_start);
-                            $stop = $session->scheduled_stop instanceof \DateTimeInterface ? $session->scheduled_stop : Carbon::parse($session->scheduled_stop);
-                            $hours = $stop->greaterThan($start) ? $stop->diffInHours($start) : 0;
-                            if ($hours > 0) {
-                                $totalEarnings += $hourlyRate * $hours;
+                            $start = $session->scheduled_start instanceof \Carbon\Carbon ? $session->scheduled_start : Carbon::parse($session->scheduled_start);
+                            $stop = $session->scheduled_stop instanceof \Carbon\Carbon ? $session->scheduled_stop : Carbon::parse($session->scheduled_stop);
+                            if ($stop->gt($start)) {
+                                $hours = $start->diffInHours($stop);
+                                if ($hours > 0) {
+                                    $totalEarnings += $hourlyRate * $hours;
+                                }
                             }
                         } catch (\Exception $e) {
                             // skip invalid datetimes
@@ -146,16 +166,15 @@ class GetCoursesController extends Controller
                 $metrics['tutor'] = [
                     'total_sessions_hosted' => $sessions->count(),
                     'total_earnings' => round($totalEarnings, 2),
-                    'total_courses_created' => method_exists($user, 'soldCourses') ? $user->soldCourses()->count() : 0,
                 ];
             }
 
             // Admin metrics
             if ($user->user_type === 'admin') {
                 $metrics['admin'] = [
-                    'total_users' => User::count(),
+                    'total_users' => \App\Models\User::count(),
                     'total_courses' => \App\Models\Course::count(),
-                    'total_sessions' => TutingSession::count(),
+                    'total_sessions' => \App\Models\TutingSession::count(),
                 ];
             }
         }

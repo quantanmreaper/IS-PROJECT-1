@@ -5,34 +5,34 @@ import toastr from "toastr";
 
 export default function PaymentSummary({ auth, payment }) {
     const [processing, setProcessing] = useState(false);
+    const formRef = React.useRef();
 
     const handleConfirm = () => {
         setProcessing(true);
-        router.post(
-            payment.confirm_url,
-            {},
-            {
-                onSuccess: (page) => {
-                    // If backend returns a redirect URL, handle it
-                    if (page.props && page.props.redirect) {
-                        toastr.info("Redirecting to payment...");
-                        window.location.href = page.props.redirect;
-                    }
-                },
-                onError: (errors) => {
-                    toastr.error("Failed to initiate payment.");
-                },
-                onFinish: () => setProcessing(false),
-                preserveScroll: true,
-                preserveState: true,
-                only: [],
-            }
-        );
+        if (formRef.current) {
+            formRef.current.submit();
+        }
     };
 
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Payment Summary" />
+            <form
+                ref={formRef}
+                action={payment.confirm_url}
+                method="POST"
+                style={{ display: "none" }}
+            >
+                {/* CSRF token for Laravel */}
+                <input
+                    type="hidden"
+                    name="_token"
+                    value={
+                        window?.Laravel?.csrfToken ||
+                        document.querySelector("meta[name=csrf-token]")?.content
+                    }
+                />
+            </form>
             <div className="py-10 bg-gray-50 min-h-screen flex items-center justify-center">
                 <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-8">
                     <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">

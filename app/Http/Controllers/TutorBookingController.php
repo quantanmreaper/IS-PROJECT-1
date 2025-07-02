@@ -49,15 +49,20 @@ class TutorBookingController extends Controller
 
         $tutor = User::findOrFail($tutorId);
         $duration = (int) $request->input('duration');
-        $hourlyRate = optional($tutor->TutorDetails)->hourly_rate ?? 0; // Fetch from TutorDetails
-        $amount = $hourlyRate * $duration;
+        $hourlyRate = (float) (optional($tutor->TutorDetails)->hourly_rate ?? 0);
+        if ($hourlyRate < 0.1 || $duration < 1) {
+            return back()->withErrors(['session_datetime' => 'Tutor hourly rate or duration is invalid.']);
+        }
+        $amount = round($hourlyRate * $duration, 2);
+        $sessionStart = \Carbon\Carbon::parse($request->input('session_datetime'));
+        $sessionStop = $sessionStart->copy()->addHours($duration);
 
         $session = TutingSession::create([
             'tutee_id' => Auth::user()->id,
             'tutor_id' => $tutorId,
             'unit_id' => $request->input('unit_id'),
-            'scheduled_start' => $request->input('session_datetime'),
-            'scheduled_stop' => \Carbon\Carbon::parse($request->input('session_datetime'))->addHours($duration),
+            'scheduled_start' => $sessionStart,
+            'scheduled_stop' => $sessionStop,
             'notes' => $request->input('notes', ''),
         ]);
 
@@ -93,7 +98,7 @@ class TutorBookingController extends Controller
                 'item_title' => $tutor->name . ' Tutoring Session',
                 'amount' => $amount,
                 'instructor_name' => $tutor->name,
-                'session_datetime' => $request->input('session_datetime'),
+                'session_datetime' => $sessionStart->format('D, M j Y, g:i a'),
                 'ref' => $refOrderNumber,
                 'confirm_url' => route('bookTutor.payment.confirm', $session->id),
                 'cancel_url' => route('bookTutor.create', $tutor->id),
@@ -107,7 +112,30 @@ class TutorBookingController extends Controller
         $session = TutingSession::findOrFail($sessionId);
         $tutor = $session->tutor;
         $user = Auth::user();
-        $amount = optional($tutor->TutorDetails)->hourly_rate * ($session->scheduled_stop->diffInHours($session->scheduled_start));
+        $hourlyRate = (float) (optional($tutor->TutorDetails)->hourly_rate ?? 0);
+        $start = $session->scheduled_start instanceof \Carbon\Carbon ? $session->scheduled_start : \Carbon\Carbon::parse($session->scheduled_start);
+        $stop = $session->scheduled_stop instanceof \Carbon\Carbon ? $session->scheduled_stop : \Carbon\Carbon::parse($session->scheduled_stop);
+        $duration = $start->diffInHours($stop);
+        $amount = round($hourlyRate * $duration, 2);
+        if ($amount < 0.1) {
+            return response()->json(['error' => 'Tutoring session amount must be at least 0.1 KES. Please check the tutor rate or session duration.'], 400);
+        }
+        // Fallback logic for phone number
+        $phone = $user->phone_number;
+        $phoneSource = 'user';
+        if (empty($phone)) {
+            $phone = $request->input('phone_number');
+            $phoneSource = 'request';
+        }
+        if (empty($phone)) {
+            $phone = '254712345678'; // fallback/test value
+            $phoneSource = 'fallback';
+        }
+        Log::info('Using phone number for payment', [
+            'phone' => $phone,
+            'source' => $phoneSource,
+            'user_id' => $user->id,
+        ]);
         $intasend = new \App\Services\IntaSendCheckoutService();
         $host = config('app.url');
         $redirectUrl = route('payment.callback');
@@ -117,12 +145,13 @@ class TutorBookingController extends Controller
                 'KES',
                 $user->name,
                 $user->email,
-                $user->phone_number ?? '',
+                $phone,
                 $host,
                 $redirectUrl,
                 'booking_' . $session->id
             );
-            return response()->json(['redirect' => $resp->url]);
+            // Immediately redirect to IntaSend payment page
+            return redirect()->away($resp->url);
         } catch (\Exception $e) {
             Log::error('Tutoring payment initiation failed', [
                 'error' => $e->getMessage(),

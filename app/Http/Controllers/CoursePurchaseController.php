@@ -6,7 +6,6 @@ use App\Models\Course;
 use App\Models\CoursePurchase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class CoursePurchaseController extends Controller
@@ -26,24 +25,30 @@ class CoursePurchaseController extends Controller
             ]);
             return response()->json(['success' => true, 'message' => 'Enrolled for free.']);
         }
-        $refOrderNumber = 'course_' . $course->id . '_' . uniqid();
-        // Save pending purchase
-        CoursePurchase::updateOrCreate([
-            'user_id' => $user->id,
-            'course_id' => $course->id,
-        ], [
-            'amount' => $course->price,
-            'status' => 'pending',
-            'transaction_ref' => $refOrderNumber,
-        ]);
-        // Show payment summary page
+        // Try to find an existing pending purchase
+        $purchase = CoursePurchase::where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->where('status', 'pending')
+            ->first();
+        if (!$purchase) {
+            $refOrderNumber = 'course_' . $course->id . '_' . uniqid();
+            $purchase = CoursePurchase::updateOrCreate([
+                'user_id' => $user->id,
+                'course_id' => $course->id,
+            ], [
+                'amount' => $course->price,
+                'status' => 'pending',
+                'transaction_ref' => $refOrderNumber,
+            ]);
+        }
+        // Show payment summary page with the correct transaction_ref
         return Inertia::render('PaymentSummary', [
             'payment' => [
                 'item_type' => 'course',
                 'item_title' => $course->title,
                 'amount' => $course->price,
                 'instructor_name' => $course->seller->name,
-                'ref' => $refOrderNumber,
+                'ref' => $purchase->transaction_ref,
                 'confirm_url' => route('courses.purchase.confirm', $course->id),
                 'cancel_url' => route('courses.show', $course->id),
             ]
@@ -70,13 +75,9 @@ class CoursePurchaseController extends Controller
                 $redirectUrl,
                 $purchase->transaction_ref
             );
-            return response()->json(['redirect' => $resp->url]);
+            // Immediately redirect to IntaSend payment page
+            return redirect()->away($resp->url);
         } catch (\Exception $e) {
-            Log::error('Course payment initiation failed', [
-                'error' => $e->getMessage(),
-                'course_id' => $course->id,
-                'user_id' => $user->id,
-            ]);
             return response()->json(['error' => 'Failed to initiate payment. Please try again.'], 500);
         }
     }
