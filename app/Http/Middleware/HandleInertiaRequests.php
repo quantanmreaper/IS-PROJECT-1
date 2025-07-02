@@ -39,6 +39,7 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'is_tutor' => $request->user()->is_tutor,
                     'is_mentor' => $request->user()->is_mentor,
+                    'user_type' => $request->user()->user_type,
                     'unread_message_count' => Message::where('recipient_id', $request->user()->id)
                                                ->where('read', false)
                                                ->count(),
