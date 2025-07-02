@@ -115,6 +115,7 @@ class GetCoursesController extends Controller
         $user = Auth::user();
         $metrics = [];
 
+        // Set metrics based on user type
         if ($user->user_type === 'standard user') {
             // Learner metrics (all users)
             $metrics['learner'] = [
@@ -151,15 +152,14 @@ class GetCoursesController extends Controller
                     'total_earnings' => round($totalEarnings, 2),
                 ];
             }
-
-            // Admin metrics
-            if ($user->user_type === 'admin') {
-                $metrics['admin'] = [
-                    'total_users' => \App\Models\User::count(),
-                    'total_courses' => \App\Models\Course::count(),
-                    'total_sessions' => \App\Models\TutingSession::count(),
-                ];
-            }
+        } 
+        // Admin metrics - separate condition for admin users
+        else if ($user->user_type === 'admin') {
+            $metrics['admin'] = [
+                'total_users' => \App\Models\User::count(),
+                'total_courses' => \App\Models\Course::count(),
+                'total_sessions' => \App\Models\TutingSession::count(),
+            ];
         }
 
         return Inertia::render('Dashboard', [
