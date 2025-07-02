@@ -115,24 +115,7 @@ class GetCoursesController extends Controller
         $user = Auth::user();
         $metrics = [];
 
-        if ($user) {
-            // Always initialize all metrics keys to avoid undefined index errors
-            $metrics['learner'] = [
-                'total_courses_enrolled' => 0,
-                'total_sessions_booked' => 0,
-                'total_reviews_written' => 0,
-                'total_courses_created' => 0,
-            ];
-            $metrics['tutor'] = [
-                'total_sessions_hosted' => 0,
-                'total_earnings' => 0,
-            ];
-            $metrics['admin'] = [
-                'total_users' => 0,
-                'total_courses' => 0,
-                'total_sessions' => 0,
-            ];
-
+        if ($user->user_type === 'standard user') {
             // Learner metrics (all users)
             $metrics['learner'] = [
                 'total_courses_enrolled' => CoursePurchase::where('user_id', $user->id)->count(),
