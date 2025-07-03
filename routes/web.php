@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Broadcast;
 use App\Http\Controllers\GetCoursesController;
 use App\Http\Controllers\CourseReviewController;
 use App\Http\Controllers\CoursePurchaseController;
+use App\Http\Controllers\AdminReportController;
 
 // Add this line to register broadcasting routes with web middleware
 //Broadcast::routes(['middleware' => ['web', 'auth']]);
@@ -127,6 +128,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::match(['get', 'post'], '/courses/{course}/purchase', [CoursePurchaseController::class, 'purchase'])->name('courses.purchase');
     Route::post('/courses/{course}/purchase/confirm', [CoursePurchaseController::class, 'confirm'])->name('courses.purchase.confirm');
     Route::get('/courses/{course}/payment-callback', [CoursePurchaseController::class, 'callback'])->name('courses.payment.callback');
+
+    // Admin Reports Routes
+    Route::get('/admin/reports', [AdminReportController::class, 'index'])->name('admin.reports');
+    Route::post('/admin/reports/preview', [AdminReportController::class, 'preview'])->name('admin.reports.preview');
+    Route::post('/admin/reports/download', [AdminReportController::class, 'download'])->name('admin.reports.download');
+    Route::get('/admin/reports/chart-data', [AdminReportController::class, 'getChartData'])->name('admin.reports.chart-data');
+
+
+    //Units Addition
+    Route::get('UnitsAddition', [UnitController::class, 'create'])->name('UnitsAddition');
+    Route::post('UnitsAddition', [UnitController::class, 'store'])->name('UnitsAddition.store');
+
 });
 
 // Payment callback route after IntaSend checkout
@@ -135,5 +148,7 @@ Route::get('/bookTutor/thank-you', function () {
 })->name('payment.callback');
 
 Route::post('bookTutor/{session}/payment/confirm', [TutorBookingController::class, 'confirmPayment'])->name('bookTutor.payment.confirm');
+
+
 
 require __DIR__ . '/auth.php';
