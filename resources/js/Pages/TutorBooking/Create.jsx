@@ -1,7 +1,9 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm, router } from "@inertiajs/react";
 import { route } from "ziggy-js";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { formatInTimeZone } from 'date-fns-tz';
+import { toNairobiTime, nairobiDateToUtcIso } from '@/utils/nairobiTime';
 
 export default function TutorBookingCreate({
     tutor,
@@ -17,6 +19,51 @@ export default function TutorBookingCreate({
     });
     const [loading, setLoading] = useState(false);
     const [dateError, setDateError] = useState("");
+    
+    // Format times for HTML datetime-local input
+    const formatForDatetimeLocal = (dateTimeString) => {
+        if (!dateTimeString) return '';
+        const date = new Date(dateTimeString);
+        return date.toISOString().slice(0, 16);
+    };
+    
+    // Generate min and max datetime values
+    const [minDateTime, setMinDateTime] = useState('');
+    const [maxDateTime, setMaxDateTime] = useState('');
+    
+    // Calculate available time slots based on tutor availability
+    useEffect(() => {
+        // Default to now for minimum time
+        let minTime = new Date();
+        // Default to 14 days from now for maximum time
+        let maxTime = new Date();
+        maxTime.setDate(maxTime.getDate() + 14);
+        
+        // If tutor has availability settings, use those instead
+        if (availability && availability.start) {
+            // Parse daily start time (format: "HH:MM:SS")
+            const [startHours, startMinutes] = availability.start.split(':');
+            const today = new Date();
+            today.setHours(parseInt(startHours, 10), parseInt(startMinutes, 10), 0);
+            
+            // If today's start time is already past, set to tomorrow
+            if (today < minTime) {
+                today.setDate(today.getDate() + 1);
+            }
+            
+            minTime = today;
+        }
+        
+        if (availability && availability.stop) {
+            // For max time, we need to calculate the last possible day within 14 days
+            // that ends before the tutor's availability stop time
+            const [stopHours, stopMinutes] = availability.stop.split(':');
+            maxTime.setHours(parseInt(stopHours, 10), parseInt(stopMinutes, 10), 0);
+        }
+        
+        setMinDateTime(formatForDatetimeLocal(minTime));
+        setMaxDateTime(formatForDatetimeLocal(maxTime));
+    }, [availability]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -24,15 +71,94 @@ export default function TutorBookingCreate({
     };
 
     const handleDateChange = (e) => {
+        const selectedDateTime = new Date(e.target.value);
+        setDateError("");
+        
+        // Check if the selected time is within the tutor's daily availability window
+        if (availability.start && availability.stop) {
+            const [startHours, startMinutes] = availability.start.split(':');
+            const [stopHours, stopMinutes] = availability.stop.split(':');
+            
+            const selectedHours = selectedDateTime.getHours();
+            const selectedMinutes = selectedDateTime.getMinutes();
+            
+            // Create Date objects for today with the tutor's start and stop times
+            const availabilityStart = new Date(selectedDateTime);
+            availabilityStart.setHours(parseInt(startHours, 10), parseInt(startMinutes, 10), 0);
+            
+            const availabilityStop = new Date(selectedDateTime);
+            availabilityStop.setHours(parseInt(stopHours, 10), parseInt(stopMinutes, 10), 0);
+            
+            // Check if selected time is outside availability window
+            if (selectedDateTime < availabilityStart || selectedDateTime > availabilityStop) {
+                setDateError(`This tutor is only available between ${availability.start} and ${availability.stop}`);
+                return;
+            }
+        }
+        
+        // Check if the selected time overlaps with any booked sessions
+        const sessionDuration = parseInt(data.duration, 10);
+        const sessionEnd = new Date(selectedDateTime);
+        sessionEnd.setHours(sessionEnd.getHours() + sessionDuration);
+        
+        const hasConflict = unavailableTimes.some(timeSlot => {
+            const bookedStart = new Date(timeSlot.start);
+            const bookedEnd = new Date(timeSlot.stop);
+            
+            // Check if there's any overlap between the proposed session and existing sessions
+            return (
+                (selectedDateTime >= bookedStart && selectedDateTime < bookedEnd) || 
+                (sessionEnd > bookedStart && sessionEnd <= bookedEnd) ||
+                (selectedDateTime <= bookedStart && sessionEnd >= bookedEnd)
+            );
+        });
+        
+        if (hasConflict) {
+            setDateError("This time slot conflicts with an existing booking. Please choose another time.");
+            return;
+        }
+        
         setData("session_datetime", e.target.value);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        if (dateError) {
+            return; // Don't submit if there are date errors
+        }
+        
+        // Validate required fields
+        if (!data.unit_id || !data.session_datetime) {
+            if (!data.unit_id) setData('errors', { ...errors, unit_id: 'Please select a unit' });
+            if (!data.session_datetime) setData('errors', { ...errors, session_datetime: 'Please select a date and time' });
+            return;
+        }
+        
         setLoading(true);
-        router.post(route("bookTutor.store", tutor.id), data, {
-            onFinish: () => setLoading(false),
-        });
+        
+        // Use Inertia router.post directly
+        router.post(
+            route("bookTutor.store", tutor.id), 
+            data, 
+            {
+                preserveScroll: true,
+                onError: (errors) => {
+                    setLoading(false);
+                    console.error("Form submission errors:", errors);
+                },
+                onSuccess: () => {
+                    // This will run when the form is successfully submitted and the redirect happens
+                    console.log("Form submitted successfully!");
+                },
+                onFinish: () => {
+                    // This runs whether the form is successful or not
+                    console.log("Form submission completed");
+                    // We don't set loading to false here because we want to keep the overlay
+                    // during redirect to payment page
+                }
+            }
+        );
     };
 
     return (
@@ -104,6 +230,11 @@ export default function TutorBookingCreate({
                                 Select a unit and date/time to book your session
                                 with this tutor.
                             </p>
+                            {availability && availability.start && availability.stop && (
+                                <p className="text-blue-600 mt-2 font-medium">
+                                    Tutor is available daily between {availability.start} and {availability.stop}
+                                </p>
+                            )}
                         </div>
                         <form
                             onSubmit={handleSubmit}
@@ -144,6 +275,8 @@ export default function TutorBookingCreate({
                                     name="session_datetime"
                                     value={data.session_datetime}
                                     onChange={handleDateChange}
+                                    min={minDateTime}
+                                    max={maxDateTime}
                                     className="w-full border border-blue-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-300 focus:border-blue-400 transition bg-white"
                                     required
                                 />
@@ -204,11 +337,24 @@ export default function TutorBookingCreate({
                                     </div>
                                 )}
                             </div>
+                            {/* Debug output */}
+                            {Object.keys(errors).length > 0 && (
+                                <div className="text-red-600 p-2 bg-red-50 rounded-lg">
+                                    <p className="font-semibold">Please fix these errors:</p>
+                                    <ul className="list-disc list-inside text-sm">
+                                        {Object.entries(errors).map(([key, value]) => (
+                                            <li key={key}>{value}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                             {/* Submit */}
                             <button
                                 type="submit"
-                                disabled={processing}
-                                className="w-full bg-gradient-to-r from-blue-500 to-blue-700 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:from-blue-800 hover:to-blue-900 transition-all duration-200 mt-4"
+                                disabled={processing || dateError !== ""}
+                                className={`w-full bg-gradient-to-r ${
+                                    dateError ? "from-gray-400 to-gray-500" : "from-blue-500 to-blue-700 hover:from-blue-800 hover:to-blue-900"
+                                } text-white px-6 py-3 rounded-xl font-bold shadow-lg transition-all duration-200 mt-4`}
                             >
                                 Book Session
                             </button>

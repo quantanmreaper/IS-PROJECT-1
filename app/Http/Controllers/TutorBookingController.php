@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Mail\NewBookingNotification;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 
 class TutorBookingController extends Controller
@@ -32,7 +33,36 @@ class TutorBookingController extends Controller
     {
         $tutor = User::findOrFail($tutorId);
         $units = $tutor->units()->select('units.id', 'units.name')->get();
-        return Inertia::render('TutorBooking/Create', ['tutor' => $tutor, 'units' => $units]);
+        
+        // Get tutor's availability from TutorDetails
+        $tutorDetails = $tutor->TutorDetails; // Note the capital T in TutorDetails to match the relationship
+        Log::info('Tutor details retrieved', [
+            'tutor_id' => $tutorId,
+            'has_details' => !is_null($tutorDetails),
+        ]);
+        
+        $availability = [
+            'start' => $tutorDetails ? $tutorDetails->availability_start : null,
+            'stop' => $tutorDetails ? $tutorDetails->availability_stop : null,
+        ];
+        
+        // Get already booked sessions to prevent double booking
+        $unavailableTimes = TutingSession::where('tutor_id', $tutorId)
+            ->whereDate('scheduled_start', '>=', now())
+            ->get(['scheduled_start', 'scheduled_stop'])
+            ->map(function($session) {
+                return [
+                    'start' => $session->scheduled_start,
+                    'stop' => $session->scheduled_stop,
+                ];
+            });
+        
+        return Inertia::render('TutorBooking/Create', [
+            'tutor' => $tutor, 
+            'units' => $units,
+            'availability' => $availability,
+            'unavailableTimes' => $unavailableTimes,
+        ]);
     }
 
     /**
@@ -40,70 +70,98 @@ class TutorBookingController extends Controller
      */
     public function store(Request $request, $tutorId)
     {
-        $request->validate([
-            'unit_id' => 'required|exists:units,id',
-            'session_datetime' => 'required|date',
-            'duration' => 'required|integer|min:1|max:6',
-            'notes' => 'nullable|string|max:500',
-        ]);
+        try {
+            Log::info('Starting booking process', [
+                'tutor_id' => $tutorId,
+                'input' => $request->except(['_token']),
+            ]);
+            
+            $validated = $request->validate([
+                'unit_id' => 'required|exists:units,id',
+                'session_datetime' => 'required|date',
+                'duration' => 'required|integer|min:1|max:6',
+                'notes' => 'nullable|string|max:500',
+            ]);
 
-        $tutor = User::findOrFail($tutorId);
-        $duration = (int) $request->input('duration');
-        $hourlyRate = (float) (optional($tutor->TutorDetails)->hourly_rate ?? 0);
-        if ($hourlyRate < 0.1 || $duration < 1) {
-            return back()->withErrors(['session_datetime' => 'Tutor hourly rate or duration is invalid.']);
-        }
-        $amount = round($hourlyRate * $duration, 2);
-        $sessionStart = \Carbon\Carbon::parse($request->input('session_datetime'));
-        $sessionStop = $sessionStart->copy()->addHours($duration);
+            $tutor = User::findOrFail($tutorId);
+            $duration = (int) $request->input('duration');
+            $tutorDetails = $tutor->TutorDetails;
+            $hourlyRate = (float) ($tutorDetails ? $tutorDetails->hourly_rate : 0);
+            
+            Log::info('Processing booking with rate', [
+                'hourly_rate' => $hourlyRate,
+                'duration' => $duration
+            ]);
+            
+            if ($hourlyRate < 0.1 || $duration < 1) {
+                Log::warning('Invalid rate or duration', [
+                    'hourly_rate' => $hourlyRate, 
+                    'duration' => $duration
+                ]);
+                return back()->withErrors(['session_datetime' => 'Tutor hourly rate or duration is invalid.']);
+            }
+            
+            $amount = round($hourlyRate * $duration, 2);
+            $sessionStart = Carbon::parse($request->input('session_datetime'));
+            $sessionStop = $sessionStart->copy()->addHours($duration);
 
-        $session = TutingSession::create([
-            'tutee_id' => Auth::user()->id,
-            'tutor_id' => $tutorId,
-            'unit_id' => $request->input('unit_id'),
-            'scheduled_start' => $sessionStart,
-            'scheduled_stop' => $sessionStop,
-            'notes' => $request->input('notes', ''),
-        ]);
+            $session = TutingSession::create([
+                'tutee_id' => Auth::user()->id,
+                'tutor_id' => $tutorId,
+                'unit_id' => $request->input('unit_id'),
+                'scheduled_start' => $sessionStart,
+                'scheduled_stop' => $sessionStop,
+                'notes' => $request->input('notes', ''),
+            ]);
 
-        // Send email notification to tutor
-        Mail::to($tutor->email)->send(new NewBookingNotification($tutor, Auth::user(), $session));
+            // Send email notification to tutor
+            Mail::to($tutor->email)->send(new NewBookingNotification($tutor, Auth::user(), $session));
 
-        // Prepare payment variables
-        $intasend = new \App\Services\IntaSendCheckoutService();
-        $host = config('app.url'); // Or set your public host URL
-        $redirectUrl = route('payment.callback'); // Define this route for payment callback/redirect
-        $refOrderNumber = 'booking_' . uniqid();
-        $userName = Auth::user()->name;
-        $userEmail = Auth::user()->email;
-        $userPhone = Auth::user()->phone_number ?? '';
+            // Prepare payment variables
+            $intasend = new \App\Services\IntaSendCheckoutService();
+            $host = config('app.url'); // Or set your public host URL
+            $redirectUrl = route('payment.callback'); // Define this route for payment callback/redirect
+            $refOrderNumber = 'booking_' . uniqid();
+            $userName = Auth::user()->name;
+            $userEmail = Auth::user()->email;
+            $userPhone = Auth::user()->phone_number ?? '';
 
-        // Log before payment initiation
-        Log::info('Initiating IntaSend payment', [
-            'amount' => $amount,
-            'currency' => 'KES',
-            'user_name' => $userName,
-            'user_email' => $userEmail,
-            'user_phone' => $userPhone,
-            'host' => $host,
-            'redirectUrl' => $redirectUrl,
-            'refOrderNumber' => $refOrderNumber,
-            'session_id' => $session->id,
-        ]);
-
-        // Save session and prepare summary
-        return Inertia::render('PaymentSummary', [
-            'payment' => [
-                'item_type' => 'tutoring',
-                'item_title' => $tutor->name . ' Tutoring Session',
+            // Log before payment initiation
+            Log::info('Initiating IntaSend payment', [
                 'amount' => $amount,
-                'instructor_name' => $tutor->name,
-                'session_datetime' => $sessionStart->format('D, M j Y, g:i a'),
-                'ref' => $refOrderNumber,
-                'confirm_url' => route('bookTutor.payment.confirm', $session->id),
-                'cancel_url' => route('bookTutor.create', $tutor->id),
-            ]
-        ]);
+                'currency' => 'KES',
+                'user_name' => $userName,
+                'user_email' => $userEmail,
+                'user_phone' => $userPhone,
+                'host' => $host,
+                'redirectUrl' => $redirectUrl,
+                'refOrderNumber' => $refOrderNumber,
+                'session_id' => $session->id,
+            ]);
+
+            // Save session and prepare summary
+            return Inertia::render('PaymentSummary', [
+                'payment' => [
+                    'item_type' => 'tutoring',
+                    'item_title' => $tutor->name . ' Tutoring Session',
+                    'amount' => $amount,
+                    'instructor_name' => $tutor->name,
+                    'session_datetime' => $sessionStart->format('D, M j Y, g:i a'),
+                    'ref' => $refOrderNumber,
+                    'confirm_url' => route('bookTutor.payment.confirm', $session->id),
+                    'cancel_url' => route('bookTutor.create', $tutor->id),
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in booking process', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'tutor_id' => $tutorId,
+                'input' => $request->except(['_token']),
+            ]);
+            
+            return back()->withErrors(['general' => 'An error occurred while processing your booking. Please try again.']);
+        }
     }
 
     // Confirm and actually initiate IntaSend checkout (step 2)
