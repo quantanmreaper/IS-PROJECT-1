@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use Illuminate\Support\Collection;
 
 class ReportExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize, WithStyles
 {
@@ -67,7 +68,15 @@ class ReportExport implements FromArray, WithHeadings, WithTitle, ShouldAutoSize
         }
         
         // Regular data export for other report types
-        return $this->reportData['data'] ?? [];
+        // Ensure we convert any Collection to array
+        if (isset($this->reportData['data'])) {
+            if ($this->reportData['data'] instanceof Collection) {
+                return $this->reportData['data']->toArray();
+            }
+            return $this->reportData['data'];
+        }
+        
+        return [];
     }
 
     /**

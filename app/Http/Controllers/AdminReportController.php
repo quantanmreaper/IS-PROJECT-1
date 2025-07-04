@@ -121,12 +121,13 @@ class AdminReportController extends Controller
                             'is_mentor' => $user->is_mentor ? 'Yes' : 'No',
                             'created_at' => $user->created_at->format('Y-m-d'),
                         ];
-                    });
+                    })
+                    ->toArray();
 
                 return [
                     'title' => 'User Report',
                     'date_range' => $startDate->format('Y-m-d') . ' to ' . $endDate->format('Y-m-d'),
-                    'total_count' => $users->count(),
+                    'total_count' => count($users),
                     'data' => $users,
                     'columns' => ['ID', 'Name', 'Email', 'User Type', 'Is Tutor', 'Is Mentor', 'Created At'],
                 ];
@@ -146,12 +147,13 @@ class AdminReportController extends Controller
                             'status' => $course->status,
                             'created_at' => $course->created_at->format('Y-m-d'),
                         ];
-                    });
+                    })
+                    ->toArray();
 
                 return [
                     'title' => 'Course Report',
                     'date_range' => $startDate->format('Y-m-d') . ' to ' . $endDate->format('Y-m-d'),
-                    'total_count' => $courses->count(),
+                    'total_count' => count($courses),
                     'data' => $courses,
                     'columns' => ['ID', 'Title', 'Seller', 'Price', 'Status', 'Created At'],
                 ];
@@ -172,12 +174,13 @@ class AdminReportController extends Controller
                             'acceptance' => $session->acceptance,
                             'created_at' => $session->created_at->format('Y-m-d'),
                         ];
-                    });
+                    })
+                    ->toArray();
 
                 return [
                     'title' => 'Session Report',
                     'date_range' => $startDate->format('Y-m-d') . ' to ' . $endDate->format('Y-m-d'),
-                    'total_count' => $sessions->count(),
+                    'total_count' => count($sessions),
                     'data' => $sessions,
                     'columns' => ['ID', 'Tutor', 'Tutee', 'Start Time', 'End Time', 'Status', 'Created At'],
                 ];
