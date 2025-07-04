@@ -13,8 +13,12 @@ class UnitController extends Controller
      */
     public function index()
     {
-        $units = Unit::all();
-        return Inertia::render('Units/Index', ['units' => $units]);
+        $units = Unit::paginate(10);
+        return Inertia::render('Units/Index', [
+            'units' => $units,
+            'currentPage' => $units->currentPage(),
+            'lastPage' => $units->lastPage(),
+        ]);
     }
 
     /**
@@ -30,7 +34,6 @@ class UnitController extends Controller
      */
     public function store(Request $request)
     {
-        //
         $request->validate([
             'name' => 'required|max:255',
             'description' => 'required',

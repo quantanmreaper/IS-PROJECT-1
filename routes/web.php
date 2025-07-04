@@ -135,8 +135,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/admin/reports/download', [AdminReportController::class, 'download'])->name('admin.reports.download');
     Route::get('/admin/reports/chart-data', [AdminReportController::class, 'getChartData'])->name('admin.reports.chart-data');
 
-
-    //Units Addition
+    // Units Addition routes
     Route::get('UnitsAddition', [UnitController::class, 'create'])->name('UnitsAddition');
     Route::post('UnitsAddition', [UnitController::class, 'store'])->name('UnitsAddition.store');
 

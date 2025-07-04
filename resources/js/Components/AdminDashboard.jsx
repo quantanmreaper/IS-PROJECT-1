@@ -133,7 +133,7 @@ export default function AdminDashboard({ metrics }) {
                                 </h1>
                             </div>
                             <p className="text-blue-100 text-lg mt-2 max-w-2xl">
-                                Monitor and manage your platform's key metrics and performance.
+                                Monitor and manage platform's key metrics and performance.
                             </p>
                         </div>
                         <div className="mt-4 md:mt-0 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">

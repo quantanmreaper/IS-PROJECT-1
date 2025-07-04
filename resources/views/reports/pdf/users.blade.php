@@ -98,7 +98,7 @@
     
     <div class="footer">
         <p>This report is confidential and intended for authorized personnel only.</p>
-        <p>© {{ date('Y') }} IS-PROJECT-1. All rights reserved.</p>
+        <p>© {{ date('Y') }} Peer To Peer Mentoring and Tutoring System. All rights reserved.</p>
     </div>
 </body>
 </html> 

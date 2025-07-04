@@ -1,46 +1,45 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, Link } from "@inertiajs/react";
 import { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 
-export default function UnitsAddition({
-    units: initialUnits,
-    links,
+export default function Index({
+    units,
     currentPage,
     lastPage,
+    flash
 }) {
-    const [units, setUnits] = useState(initialUnits || []);
     const [page, setPage] = useState(currentPage || 1);
-    const { data, setData, post, processing, errors, reset } = useForm({
-        name: "",
-        description: "",
-    });
+    const [successMessage, setSuccessMessage] = useState(flash?.success || null);
+    const [errorMessage, setErrorMessage] = useState(flash?.error || null);
 
-    // Fetch units for a given page
-    const fetchUnits = (pageNum) => {
-        window.axios
-            .get(route("Units.index", { page: pageNum }))
-            .then((res) => {
-                setUnits(res.data.units.data);
-                setPage(res.data.units.current_page);
-            });
-    };
+    // Clear messages after 5 seconds
+    useEffect(() => {
+        if (successMessage) {
+            const timer = setTimeout(() => {
+                setSuccessMessage(null);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [successMessage]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            const timer = setTimeout(() => {
+                setErrorMessage(null);
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [errorMessage]);
 
     const handlePageChange = (newPage) => {
-        fetchUnits(newPage);
-    };
-
-    const submit = (e) => {
-        e.preventDefault();
-        post(route("UnitsAddition"), {
-            onSuccess: () => reset(),
-        });
+        window.location.href = route('units.index', { page: newPage });
     };
 
     const columns = [
         {
             name: "#",
-            selector: (row, idx) => (page - 1) * 10 + idx + 1,
+            selector: (row, idx) => ((page - 1) * 10) + idx + 1,
             width: "60px",
         },
         {
@@ -66,7 +65,7 @@ export default function UnitsAddition({
                     <h2 className="text-xl font-semibold leading-tight text-gray-800">
                         Units List
                     </h2>
-                    <a
+                    <Link
                         href={route("UnitsAddition")}
                         className="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-800 transition ease-in-out duration-150 shadow-md"
                     >
@@ -84,18 +83,45 @@ export default function UnitsAddition({
                             />
                         </svg>
                         Add New Unit
-                    </a>
+                    </Link>
                 </div>
             }
         >
             <Head title="Units List" />
             <div className="py-12 bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen">
                 <div className="mx-auto max-w-6xl sm:px-6 lg:px-8">
+                    {successMessage && (
+                        <div className="mb-4 p-4 bg-green-100 border-l-4 border-green-500 text-green-700 rounded shadow">
+                            <div className="flex items-center">
+                                <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <p>{successMessage}</p>
+                            </div>
+                        </div>
+                    )}
+                    
+                    {errorMessage && (
+                        <div className="mb-4 p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded shadow">
+                            <div className="flex items-center">
+                                <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2 2m2 2l2 2" />
+                                </svg>
+                                <p>{errorMessage}</p>
+                            </div>
+                        </div>
+                    )}
+                    
                     <div className="bg-white/90 p-8 shadow-xl rounded-2xl border border-blue-100">
                         <DataTable
                             columns={columns}
-                            data={units}
+                            data={units.data || []}
                             pagination
+                            paginationServer
+                            paginationTotalRows={units.total}
+                            paginationPerPage={units.per_page}
+                            paginationDefaultPage={currentPage}
+                            onChangePage={handlePageChange}
                             highlightOnHover
                             striped
                             noDataComponent={
@@ -104,8 +130,6 @@ export default function UnitsAddition({
                                 </div>
                             }
                         />
-                        {/* Pagination Controls (optional, if you want to keep custom pagination) */}
-                        {/* ...existing code for pagination if needed... */}
                     </div>
                 </div>
             </div>

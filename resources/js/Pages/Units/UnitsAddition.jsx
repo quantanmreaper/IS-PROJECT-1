@@ -3,7 +3,7 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
-import { Head, useForm } from "@inertiajs/react";
+import { Head, useForm, Link } from "@inertiajs/react";
 
 export default function UnitsAddition() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -13,7 +13,7 @@ export default function UnitsAddition() {
 
     const submit = (e) => {
         e.preventDefault();
-        post(route("units.store"), {
+        post(route("UnitsAddition.store"), {
             onSuccess: () => reset(),
         });
     };
@@ -21,9 +21,30 @@ export default function UnitsAddition() {
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Add Unit
-                </h2>
+                <div className="flex items-center justify-between w-full">
+                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                        Add Unit
+                    </h2>
+                    <Link
+                        href={route("units.index")}
+                        className="inline-flex items-center px-4 py-2 bg-gray-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-800 transition ease-in-out duration-150 shadow-md"
+                    >
+                        <svg
+                            className="w-4 h-4 mr-2"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                            />
+                        </svg>
+                        Back to Units
+                    </Link>
+                </div>
             }
         >
             <Head title="Add Unit" />
