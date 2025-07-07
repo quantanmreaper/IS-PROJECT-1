@@ -21,6 +21,9 @@ class GetCoursesController extends Controller
         $courses = Course::with('seller')
             ->select('id', 'user_id', 'title', 'description', 'thumbnail', 'price', 'status', 'created_at')
             ->where('status', 'published')
+            ->when(Auth::check(), function($query) {
+                return $query->where('user_id', '!=', Auth::id());
+            })
             ->get()
             ->map(function ($course) {
                 // Check if thumbnail is just a filename or already a full URL
@@ -177,6 +180,9 @@ class GetCoursesController extends Controller
         $randomCourses = Course::with('seller')
             ->select('id', 'user_id', 'title', 'description', 'thumbnail', 'price', 'status')
             ->where('status', 'published')
+            ->when(Auth::check(), function($query) {
+                return $query->where('user_id', '!=', Auth::id());
+            })
             ->inRandomOrder()
             ->limit(5)
             ->get()
@@ -190,5 +196,42 @@ class GetCoursesController extends Controller
             });
 
         return $randomCourses;
+    }
+
+    /**
+     * Display courses created by the authenticated user
+     */
+    public function myCourses()
+    {
+        $user = Auth::user();
+        
+        // Get all courses where the user is the creator
+        $courses = Course::with(['sections', 'purchases'])
+            ->where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(function ($course) {
+                // Process thumbnail URL
+                if ($course->thumbnail && !filter_var($course->thumbnail, FILTER_VALIDATE_URL)) {
+                    $course->thumbnail = asset('storage/' . $course->thumbnail);
+                }
+                
+                // Add stats for each course
+                $course->stats = [
+                    'total_students' => $course->purchases()->where('status', 'paid')->count(),
+                    'total_sections' => $course->sections()->count(),
+                    'total_lessons' => $course->sections->sum(function ($section) {
+                        return $section->lessons()->count();
+                    }),
+                    'total_reviews' => $course->reviews()->count(),
+                    'average_rating' => $course->reviews()->count() > 0 ? (float) $course->reviews()->avg('rating') : 0,
+                ];
+                
+                return $course;
+            });
+
+        return Inertia::render('Courses/MyCourses', [
+            'courses' => $courses
+        ]);
     }
 }

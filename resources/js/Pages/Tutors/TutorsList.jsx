@@ -357,7 +357,7 @@ export default function TutorsList({ tutors }) {
                                                     </>
                                                 ) : (
                                                     <span className="text-gray-500 text-xs">
-                                                        No units assigned
+                                                        No units 
                                                     </span>
                                                 )}
                                             </div>

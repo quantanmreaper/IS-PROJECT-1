@@ -121,6 +121,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // View single course route
     Route::get('/courses/{course}', [GetCoursesController::class, 'show'])->name('courses.show');
 
+    // My courses route - for courses created by the authenticated user
+    Route::get('/my-courses', [GetCoursesController::class, 'myCourses'])->name('courses.my');
+
     // Course reviews routes
     Route::post('/courses/{course}/reviews', [CourseReviewController::class, 'store'])->name('course.reviews.store');
     Route::delete('/courses/{course}/reviews/{review}', [CourseReviewController::class, 'destroy'])->name('course.reviews.destroy');

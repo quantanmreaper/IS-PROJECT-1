@@ -60,7 +60,12 @@
                                             <strong style="color:#1e293b;">Duration:</strong>
                                         </td>
                                         <td style="padding:8px 0;font-size:15px;color:#1e293b;font-weight:500;">
-                                            {{ $session->duration ?? 'N/A' }} hour(s)
+                                            @php
+                                                $start = \Carbon\Carbon::parse($session->scheduled_start);
+                                                $stop = \Carbon\Carbon::parse($session->scheduled_stop);
+                                                $duration = $start->diffInHours($stop);
+                                            @endphp
+                                            {{ $duration }} hour(s)
                                         </td>
                                     </tr>
                                 </table>
