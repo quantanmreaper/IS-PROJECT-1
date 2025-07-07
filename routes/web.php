@@ -94,10 +94,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/MentorRegistration', [MentorDetailsController::class, 'create'])->name('MentorRegistration');
     Route::post('/MentorRegistration', [MentorDetailsController::class, 'store'])->name('MentorRegistration.store');
 
-
-
     Route::get('/CourseRegistration', [CourseRegistrationController::class, 'create'])->name('CourseRegistration');
     Route::post('/CourseRegistration', [CourseRegistrationController::class, 'store'])->name('CourseRegistration');
+    
+    // New route for publishing courses
+    Route::post('/courses/{course}/publish', [CourseRegistrationController::class, 'publish'])->name('courses.publish');
 });
 
 //chatting with mentors

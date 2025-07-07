@@ -4,6 +4,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import InputError from "@/Components/InputError";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
+import axios from "axios";
 
 export default function Lessons({ auth, course, sections, userCourses }) {
     const { errors, flash } = usePage().props;
@@ -13,6 +14,9 @@ export default function Lessons({ auth, course, sections, userCourses }) {
     );
     const [showSectionForm, setShowSectionForm] = useState(false);
     const [selectedCourseId, setSelectedCourseId] = useState("");
+    const [publishing, setPublishing] = useState(false);
+    const [publishingSuccess, setPublishingSuccess] = useState(false);
+    const [publishingError, setPublishingError] = useState(null);
 
     const { data, setData, post, processing, reset } = useForm({
         course_section_id: selectedSection,
@@ -110,6 +114,29 @@ export default function Lessons({ auth, course, sections, userCourses }) {
                 content: ''
             });
         }
+    };
+
+    // Function to publish the course
+    const publishCourse = () => {
+        setPublishing(true);
+        setPublishingError(null);
+        
+        axios.post(route('courses.publish', course.id))
+            .then(response => {
+                setPublishing(false);
+                if (response.data.success) {
+                    setPublishingSuccess(true);
+                    // Update the course object to reflect the published status
+                    course.status = 'published';
+                    setTimeout(() => {
+                        setPublishingSuccess(false);
+                    }, 3000);
+                }
+            })
+            .catch(error => {
+                setPublishing(false);
+                setPublishingError(error.response?.data?.message || 'An error occurred while publishing the course');
+            });
     };
 
     // Course Selection UI when no course is selected
@@ -289,13 +316,63 @@ export default function Lessons({ auth, course, sections, userCourses }) {
                                     </div>
                                     {course && (
                                         <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-                                            <h3 className="text-lg font-semibold text-blue-700">
-                                                Course: {course.title}
-                                            </h3>
-                                            <p className="text-sm text-blue-600 mt-1">
-                                                Organize your course by adding
-                                                sections and lessons.
-                                            </p>
+                                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+                                                <div>
+                                                    <h3 className="text-lg font-semibold text-blue-700">
+                                                        Course: {course.title}
+                                                    </h3>
+                                                    <div className="flex items-center mt-2">
+                                                        <span className={`text-xs ${course.status === 'draft' ? 'bg-yellow-100 text-yellow-800' : course.status === 'published' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'} py-1 px-2 rounded-full`}>
+                                                            {course.status.charAt(0).toUpperCase() + course.status.slice(1)}
+                                                        </span>
+                                                        <p className="text-sm text-blue-600 ml-3">
+                                                            Organize your course by adding sections and lessons.
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                {course.status === 'draft' && (
+                                                    <div className="mt-4 md:mt-0">
+                                                        {publishingSuccess ? (
+                                                            <div className="bg-green-100 text-green-800 py-2 px-4 rounded-md flex items-center">
+                                                                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                                                </svg>
+                                                                Course published successfully!
+                                                            </div>
+                                                        ) : (
+                                                            <button
+                                                                onClick={publishCourse}
+                                                                disabled={publishing}
+                                                                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                                                            >
+                                                                {publishing ? (
+                                                                    <>
+                                                                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                                        </svg>
+                                                                        Publishing...
+                                                                    </>
+                                                                ) : (
+                                                                    <>
+                                                                        <svg className="w-5 h-5 mr-2 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                                                        </svg>
+                                                                        Publish Course
+                                                                    </>
+                                                                )}
+                                                            </button>
+                                                        )}
+                                                        
+                                                        {publishingError && (
+                                                            <div className="mt-2 text-sm text-red-600">
+                                                                {publishingError}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
                                     {/* Section List and Add Section Form */}

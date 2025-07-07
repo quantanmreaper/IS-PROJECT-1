@@ -251,7 +251,7 @@ class AdminReportController extends Controller
      */
     private function downloadExcel($reportType, $reportData, $startDate, $endDate)
     {
-        // This will require Excel export classes to be created
+        
         // For now, we'll return a simplified version
         $filename = $reportType . '_report_' . date('Y-m-d') . '.xlsx';
         

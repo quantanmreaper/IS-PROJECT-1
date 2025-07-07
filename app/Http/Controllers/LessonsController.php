@@ -28,7 +28,7 @@ class LessonsController extends Controller
     {
         // Get all courses owned by the authenticated user for the dropdown
         $userCourses = Course::where('user_id', Auth::id())
-            ->select('id', 'title')
+            ->select('id', 'title', 'status')
             ->get();
 
         if ($courseId) {

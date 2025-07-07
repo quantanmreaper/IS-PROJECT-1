@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class CourseRegistrationController extends Controller
 {
@@ -46,13 +47,45 @@ class CourseRegistrationController extends Controller
         }
 
         // Add user_id to the validated data
-        $validated['user_id'] = auth()->id();
+        $validated['user_id'] = Auth::id();
 
         // Create the course
         $course = Course::create($validated);
 
         return redirect()->route('dashboard', $course->id)
             ->with('success', 'Course registered successfully!');
+    }
+
+    /**
+     * Publish a course by changing its status to 'published'
+     */
+    public function publish(Course $course)
+    {
+        // Check if the current user is the owner of the course
+        if (Auth::id() !== $course->user_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'You are not authorized to publish this course.'
+            ], 403);
+        }
+
+        // Check if the course is in draft status
+        if ($course->status !== 'draft') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only draft courses can be published.'
+            ], 400);
+        }
+
+        // Update the course status to published
+        $course->status = 'published';
+        $course->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Course published successfully!',
+            'course' => $course
+        ]);
     }
 
     /**
