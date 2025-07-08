@@ -126,6 +126,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Message::class, 'recepient_id');
     }
 
+    public function tutingSessionsAsTutor()
+    {
+        return $this->hasMany(TutingSession::class, 'tutor_id');
+    }
+
     /**
      * Get the user's phone number.
      */

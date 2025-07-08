@@ -21,7 +21,7 @@ class Review extends Model
         return $this->belongsTo(User::class, 'reviewer_id');
     }
 
-    public function tutingSessison()
+    public function tutingSession()
     {
         return $this->belongsTo(TutingSession::class, 'session_id');
     }

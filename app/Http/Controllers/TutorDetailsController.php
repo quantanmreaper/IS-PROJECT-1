@@ -12,6 +12,7 @@ use App\Models\User;
 use Inertia\Response;
 use App\Mail\WelcomeTutor;
 use Illuminate\Support\Facades\Mail;
+use App\Models\Review;
 
 class TutorDetailsController extends Controller
 {
@@ -78,9 +79,45 @@ class TutorDetailsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(TutorDetails $tutorDetails)
+    public function show($id)
     {
-        //
+        $tutor = User::with(['tutorDetails', 'tutorUnits.unit'])
+            ->where('id', $id)
+            ->first();
+
+        // Get reviews for this tutor through tutor sessions
+        $reviews = Review::whereHas('tutingSession', function ($query) use ($id) {
+            $query->where('tutor_id', $id);
+        })
+            ->with('reviewer:id,name') // Include reviewer info
+            ->get();
+
+        // Calculate average rating
+        $averageRating = null;
+        if ($reviews->count() > 0) {
+            $averageRating = round($reviews->avg('rating'), 1);
+        }
+
+        // Format tutor data
+        $formattedTutor = [
+            'id' => $tutor->id,
+            'name' => $tutor->name,
+            'pfp' => $tutor->tutorDetails->pfp ?? null,
+            'bio' => $tutor->tutorDetails->bio ?? null,
+            'hourly_rate' => $tutor->tutorDetails->hourly_rate ?? null,
+            'availability_start' => $tutor->tutorDetails->availability_start ?? null,
+            'availability_stop' => $tutor->tutorDetails->availability_stop ?? null,
+            'units' => $tutor->tutorUnits->map(function ($tutorUnit) {
+                return $tutorUnit->unit->name;
+            }),
+            'reviews' => $reviews,
+            'average_rating' => $averageRating,
+            'reviews_count' => $reviews->count(),
+        ];
+
+        return Inertia::render('Tutors/TutorShow', [
+            'tutor' => $formattedTutor
+        ]);
     }
 
     /**
