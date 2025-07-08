@@ -156,6 +156,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/bookTutor/thank-you', function () {
         return Inertia::render('TutorBooking/Booked'); // or your custom thank you/confirmation page
     })->name('payment.callback');
+
+    // Mentor Requests page for mentors
+    Route::get('/mentor-requests', function () {
+        return Inertia::render('Mentors/MentorRequests'); // You can create this page as needed
+    })->name('mentorRequests.index');
 });
 
 

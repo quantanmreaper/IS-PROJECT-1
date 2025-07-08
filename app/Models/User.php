@@ -139,6 +139,14 @@ class User extends Authenticatable implements MustVerifyEmail
         return $value;
     }
 
+    /**
+     * Get the tutor units for this user (pivot records).
+     */
+    public function tutorUnits()
+    {
+        return $this->hasMany(TutorUnit::class, 'tutor_id');
+    }
+
 
     protected function casts(): array
     {

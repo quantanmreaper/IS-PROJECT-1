@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\TutorDetails;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Review;
 
 use function Termwind\render;
 
@@ -66,33 +67,71 @@ class GetTutoredController extends Controller
      */
     public function show(string $id)
     {
-        $tutor = User::where('is_tutor', true)
-            ->whereHas('tutorDetails')
-            ->with(['tutorDetails', 'units'])
-            ->findOrFail($id);
+        // $tutor = User::where('is_tutor', true)
+        //     ->whereHas('tutorDetails')
+        //     ->with(['tutorDetails', 'units'])
+        //     ->findOrFail($id);
 
-        $details = $tutor->tutorDetails;
-        if ($details instanceof \Illuminate\Database\Eloquent\Collection) {
-            $details = $details->first();
+        // $details = $tutor->tutorDetails;
+        // if ($details instanceof \Illuminate\Database\Eloquent\Collection) {
+        //     $details = $details->first();
+        // }
+
+        // $tutorData = [
+        //     'id' => $tutor->id,
+        //     'name' => $tutor->name,
+        //     'bio' => $tutor->bio ?? '',
+        //     'pfp' => $tutor->pfp ?? null,
+        //     'hourly_rate' => $details->hourly_rate ?? null,
+        //     'units' => $tutor->units->map(function ($unit) {
+        //         return [
+        //             'name' => $unit->name,
+        //             'proficiency_level' => $unit->pivot->proficiency_level ?? null,
+        //         ];
+        //     })->toArray(),
+        //     'availability_start' => $details->availability_start,
+        //     'availability_stop' => $details->availability_stop,
+        // ];
+
+        // return Inertia::render('Tutors/TutorShow', ['tutor' => $tutorData]);
+
+        $tutor = User::with(['tutorDetails', 'tutorUnits.unit'])
+            ->where('id', $id)
+            ->first();
+
+        // Get reviews for this tutor through tutor sessions
+        $reviews = Review::whereHas('tutingSession', function ($query) use ($id) {
+            $query->where('tutor_id', $id);
+        })
+            ->with('reviewer:id,name') // Include reviewer info
+            ->get();
+
+        // Calculate average rating
+        $averageRating = null;
+        if ($reviews->count() > 0) {
+            $averageRating = round($reviews->avg('rating'), 1);
         }
 
-        $tutorData = [
+        // Format tutor data
+        $formattedTutor = [
             'id' => $tutor->id,
             'name' => $tutor->name,
-            'bio' => $tutor->bio ?? '',
-            'pfp' => $tutor->pfp ?? null,
-            'hourly_rate' => $details->hourly_rate ?? null,
-            'units' => $tutor->units->map(function ($unit) {
-                return [
-                    'name' => $unit->name,
-                    'proficiency_level' => $unit->pivot->proficiency_level ?? null,
-                ];
-            })->toArray(),
-            'availability_start' => $details->availability_start,
-            'availability_stop' => $details->availability_stop,
+            'pfp' => $tutor->tutorDetails->pfp ?? null,
+            'bio' => $tutor->tutorDetails->bio ?? null,
+            'hourly_rate' => $tutor->tutorDetails->hourly_rate ?? null,
+            'availability_start' => $tutor->tutorDetails->availability_start ?? null,
+            'availability_stop' => $tutor->tutorDetails->availability_stop ?? null,
+            'units' => $tutor->tutorUnits->map(function ($tutorUnit) {
+                return $tutorUnit->unit->name;
+            }),
+            'reviews' => $reviews,
+            'average_rating' => $averageRating,
+            'reviews_count' => $reviews->count(),
         ];
 
-        return Inertia::render('Tutors/TutorShow', ['tutor' => $tutorData]);
+        return Inertia::render('Tutors/TutorShow', [
+            'tutor' => $formattedTutor
+        ]);
     }
 
     /**
