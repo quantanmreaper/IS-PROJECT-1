@@ -11,7 +11,23 @@ class CourseSectionFactory extends Factory
     {
         return [
             'course_id' => Course::inRandomOrder()->first()?->id,
-            'title' => $this->faker->sentence(3),
+            'title' => $this->faker->randomElement([
+                'Introduction',
+                'Getting Started',
+                'Basics',
+                'Advanced Topics',
+                'Summary',
+                'Overview',
+                'Module 1',
+                'Module 2',
+                'Final Thoughts',
+                'Conclusion',
+                'Resources',
+                'Case Studies',
+                'Practical Applications',
+                'Theory and Practice',
+                'Assessment',
+            ]),
             'order' => $this->faker->unique()->numberBetween(1, 20),
         ];
     }

@@ -16,8 +16,31 @@ class UnitFactory extends Factory
      */
     public function definition(): array
     {
+        $unitNames = [
+            'Introduction to Computer Science',
+            'Calculus I',
+            'Physics for Engineers',
+            'Principles of Economics',
+            'Organic Chemistry',
+            'World History',
+            'Linear Algebra',
+            'Introduction to Psychology',
+            'Data Structures and Algorithms',
+            'Microbiology',
+            'Marketing Fundamentals',
+            'Financial Accounting',
+            'Human Anatomy',
+            'Sociology Basics',
+            'Discrete Mathematics',
+            'Environmental Science',
+            'Business Law',
+            'Statistics',
+            'Philosophy of Science',
+            'Software Engineering'
+        ];
+
         return [
-            'name' => $this->faker->name(),
+            'name' => $this->faker->randomElement($unitNames),
             'description' => $this->faker->text(150),
         ];
     }

@@ -20,20 +20,37 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->count(50)->create();
-        Unit::factory()->count(15)->create();
-        TutorUnit::factory()->count(20)->create();
-        TutorDetails::factory()->count(10)->create();
-        MentorDetails::factory()->count(10)->create();
+        // Ensure at least 5 tutors exist
+        $tutors = \App\Models\User::factory()->count(5)->create(['is_tutor' => true]);
+        // Ensure at least 3 mentors exist
+        $mentors = \App\Models\User::factory()->count(3)->create(['is_mentor' => true]);
+        // Create other users
+        \App\Models\User::factory()->count(2)->create();
+        Unit::factory()->count(10)->create();
+        TutorUnit::factory()->count(15)->create();
+        TutorDetails::factory()->count(4)->create();
+        MentorDetails::factory()->count(3)->create();
         // Courses and related
-        \App\Models\Course::factory()->count(20)->create();
-        \App\Models\CourseSection::factory()->count(40)->create();
-        \App\Models\Lesson::factory()->count(100)->create();
-        \App\Models\CoursePurchase::factory()->count(30)->create();
-        \App\Models\CourseReview::factory()->count(50)->create();
+        \App\Models\Course::factory()->count(5)->create();
+        \App\Models\CourseSection::factory()->count(10)->create();
+        \App\Models\Lesson::factory()->count(25)->create();
+        \App\Models\CoursePurchase::factory()->count(10)->create();
+        // Seed unique course reviews
+        $userIds = \App\Models\User::pluck('id')->toArray();
+        $courseIds = \App\Models\Course::pluck('id')->toArray();
+        $reviewPairs = collect($userIds)
+            ->crossJoin($courseIds)
+            ->shuffle()
+            ->take(10);
+        foreach ($reviewPairs as [$userId, $courseId]) {
+            \App\Models\CourseReview::factory()->create([
+                'user_id' => $userId,
+                'course_id' => $courseId,
+            ]);
+        }
         // Sessions, reviews, messages
-        TutingSession::factory()->count(100)->create();
-        Review::factory()->count(100)->create();
-        Message::factory()->count(500)->create();
+        TutingSession::factory()->count(20)->create();
+        Review::factory()->count(20)->create();
+        Message::factory()->count(50)->create();
     }
 }

@@ -21,7 +21,7 @@ class TutorDetailsFactory extends Factory
             'tutor_id' => User::where('is_tutor', true)->inRandomOrder()->first()?->id,
             'progress_report' => 'defaultFile.pdf',
             'approval_status' => true,
-            'hourly_rate' => $this->faker->numberBetween(500, 2000),
+            'hourly_rate' => $this->faker->numberBetween(10, 2000),
             'availability_start' => '08:00',
             'availability_stop' => '16:00',
         ];

@@ -22,7 +22,18 @@ class ReviewFactory extends Factory
             'session_id' => TutingSession::inRandomOrder()->first()?->id,
             'reviewer_id' => User::where('is_tutor', false)->inRandomOrder()->first()?->id,
             'rating' => $this->faker->numberBetween(1, 5),
-            'comment' => $this->faker->text(100),
+            'comment' => $this->faker->randomElement([
+                'Great session, learned a lot!',
+                'The tutor was very helpful and patient.',
+                'I enjoyed the session and understood the topic better.',
+                'Could have been more interactive.',
+                'Excellent explanation and guidance.',
+                'The session was okay, but a bit rushed.',
+                'Very knowledgeable tutor!',
+                'Helped me solve my doubts quickly.',
+                'Would recommend to others.',
+                'Looking forward to more sessions like this.'
+            ]),
         ];
     }
 }

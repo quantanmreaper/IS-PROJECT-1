@@ -23,7 +23,23 @@ class MessageFactory extends Factory
         return [
             'sender_id' => $sender->id,
             'recipient_id' => $recipient->id,
-            'message' => $this->faker->text(255),
+            'message' => $this->faker->randomElement([
+                'Hello!',
+                'How are you?',
+                'What are you working on?',
+                'Let\'s catch up soon.',
+                'Can you help me with this?',
+                'Thank you!',
+                'See you tomorrow.',
+                'Good morning!',
+                'Good night!',
+                'Congratulations!',
+                'That sounds great!',
+                'I will get back to you.',
+                'Let me know if you need anything.',
+                'I appreciate your help.',
+                'Looking forward to it!',
+            ]),
         ];
     }
 }

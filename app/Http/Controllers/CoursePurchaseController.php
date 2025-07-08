@@ -37,7 +37,7 @@ class CoursePurchaseController extends Controller
                 'course_id' => $course->id,
             ], [
                 'amount' => $course->price,
-                'status' => 'pending',
+                'status' => 'paid',
                 'transaction_ref' => $refOrderNumber,
             ]);
         }
