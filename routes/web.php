@@ -23,6 +23,7 @@ use App\Http\Controllers\GetCoursesController;
 use App\Http\Controllers\CourseReviewController;
 use App\Http\Controllers\CoursePurchaseController;
 use App\Http\Controllers\AdminReportController;
+use App\Http\Controllers\TuitionSessionController;
 
 // Add this line to register broadcasting routes with web middleware
 //Broadcast::routes(['middleware' => ['web', 'auth']]);
@@ -143,14 +144,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('UnitsAddition', [UnitController::class, 'create'])->name('UnitsAddition');
     Route::post('UnitsAddition', [UnitController::class, 'store'])->name('UnitsAddition.store');
 
+    // Tuition Sessions routes
+    Route::get('/tuition-sessions', [TuitionSessionController::class, 'index'])->name('tuition-sessions.index');
+    Route::post('/tuition-sessions/{session}/complete', [TuitionSessionController::class, 'markComplete'])->name('tuition-sessions.complete');
+    Route::post('/tuition-sessions/{session}/review', [TuitionSessionController::class, 'storeReview'])->name('tuition-sessions.review');
+
+    Route::post('bookTutor/{session}/payment/confirm', [TutorBookingController::class, 'confirmPayment'])->name('bookTutor.payment.confirm');
+
+    // Payment callback route after IntaSend checkout
+    Route::get('/bookTutor/thank-you', function () {
+        return Inertia::render('TutorBooking/Booked'); // or your custom thank you/confirmation page
+    })->name('payment.callback');
+
+
 });
 
-// Payment callback route after IntaSend checkout
-Route::get('/bookTutor/thank-you', function () {
-    return Inertia::render('TutorBooking/Booked'); // or your custom thank you/confirmation page
-})->name('payment.callback');
-
-Route::post('bookTutor/{session}/payment/confirm', [TutorBookingController::class, 'confirmPayment'])->name('bookTutor.payment.confirm');
 
 
 

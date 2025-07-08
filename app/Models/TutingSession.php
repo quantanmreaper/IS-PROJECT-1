@@ -18,8 +18,7 @@ class TutingSession extends Model
         'scheduled_start',
         'scheduled_stop',
         'acceptance',
-        'actual_start',
-        'actual_stop',
+        'completion_status',
     ];
 
     protected $casts = [
@@ -40,5 +39,10 @@ class TutingSession extends Model
     public function unit()
     {
         return $this->belongsTo(Unit::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'session_id');
     }
 }

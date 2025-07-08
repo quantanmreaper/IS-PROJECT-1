@@ -11,10 +11,10 @@ export default function MentorList({ mentors }) {
         2: "2nd Year Student",
         3: "3rd Year Student",
         4: "4th Year Student",
-        5: "5th Year Student",
+        //5: "5th Year Student",
     };
 
-    // Prepare normalized mentor data for searching/filtering
+    //  mentor data for searching/filtering
     const normalizedMentors = useMemo(
         () =>
             mentorsList.map((mentor) => {
@@ -32,11 +32,13 @@ export default function MentorList({ mentors }) {
                           .split(",")
                           .map((h) => h.trim())
                           .filter(Boolean);
+                const yearOfStudyText = yearMap[mentor.year_of_study] || "";
                 return {
                     ...mentor,
                     course: mentor.course || "",
                     skills,
                     hobbies,
+                    yearOfStudyText,
                     allTags: [mentor.course, ...skills, ...hobbies].filter(
                         Boolean
                     ),
@@ -54,6 +56,7 @@ export default function MentorList({ mentors }) {
             return (
                 mentor.name.toLowerCase().includes(search) ||
                 mentor.course.toLowerCase().includes(search) ||
+                mentor.yearOfStudyText.toLowerCase().includes(search) ||
                 mentor.skills.some((s) => s.toLowerCase().includes(search)) ||
                 mentor.hobbies.some((h) => h.toLowerCase().includes(search))
             );
@@ -78,7 +81,7 @@ export default function MentorList({ mentors }) {
                             <div className="mt-6 sm:mt-8 bg-white rounded-lg p-2 flex flex-col sm:flex-row items-center shadow-lg">
                                 <input
                                     type="text"
-                                    placeholder="Search mentors by name, course, skill, or hobby..."
+                                    placeholder="Search mentors by name, course, year of study, skill, or hobby..."
                                     className="w-full border-0 focus:ring-0 px-4 py-3 text-gray-700 placeholder-gray-400 rounded-lg"
                                     value={searchTerm}
                                     onChange={(e) =>

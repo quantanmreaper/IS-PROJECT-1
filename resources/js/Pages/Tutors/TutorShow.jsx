@@ -3,6 +3,13 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 
 export default function TutorShow({ tutor }) {
+    // Use average_rating and reviews_count from backend if available
+    const averageRating = tutor.average_rating;
+    const reviewsCount = tutor.reviews_count;
+
+    // Add this debug statement after the component declaration
+    console.log("Tutor reviews:", tutor.reviews);
+
     return (
         <AuthenticatedLayout>
             <Head title={`Tutor: ${tutor.name}`} />
@@ -70,6 +77,47 @@ export default function TutorShow({ tutor }) {
                                 </span>
                             </div>
                         </div>
+                        {/* Average Rating Display (before Book Session button) */}
+                        <div className="flex justify-center items-center mb-6">
+                            <div className="flex items-center bg-yellow-50 px-4 py-2 rounded-lg">
+                                <div className="text-yellow-500 text-xl mr-2">★</div>
+                                <div>
+                                    <span className="font-bold text-lg">
+                                        {averageRating ? averageRating : 'No ratings yet'}
+                                    </span>
+                                    {averageRating && (
+                                        <span className="text-gray-500 text-sm ml-1">
+                                            ({reviewsCount} {reviewsCount === 1 ? 'review' : 'reviews'})
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        {/* Reviews List */}
+                        {tutor.reviews && tutor.reviews.length > 0 && (
+                            <div className="mb-8">
+                                <h2 className="text-xl font-bold text-blue-800 mb-4">Student Reviews</h2>
+                                <div className="space-y-4">
+                                    {tutor.reviews.map((review, index) => (
+                                        <div key={index} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                            <div className="flex items-center mb-2">
+                                                <div className="text-yellow-400 flex">
+                                                    {[...Array(5)].map((_, i) => (
+                                                        <span key={i} className="text-lg">
+                                                            {i < review.rating ? "★" : "☆"}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                                <span className="ml-2 text-sm text-gray-500">
+                                                    {new Date(review.created_at).toLocaleDateString()}
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-700">{review.comment}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                         <div className="flex justify-center mt-8">
                             <a
                                 href={route("bookTutor.create", tutor.id)}
