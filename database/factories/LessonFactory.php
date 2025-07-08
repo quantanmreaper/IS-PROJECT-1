@@ -22,15 +22,19 @@ class LessonFactory extends Factory
             'Final Thoughts',
         ];
         $contentType = $this->faker->randomElement(['video', 'text']);
-        $content = match ($contentType) {
-            'video' => "https://www.youtube.com/watch?v=-_6dHIPVoTM",
-            'text' => $this->faker->paragraphs(2, true),
-        };
+        if ($contentType === 'video') {
+            $content = 'video content';
+            $videoPath = "https://www.youtube.com/watch?v=inWWhr5tnEA";
+        } else {
+            $content = $this->faker->paragraphs(2, true);
+            $videoPath = null;
+        }
         return [
             'course_section_id' => CourseSection::inRandomOrder()->first()?->id,
             'title' => $this->faker->randomElement($commonTitles),
             'content_type' => $contentType,
             'content' => $content,
+            'video_path' => $videoPath,
             'order' => $this->faker->unique()->numberBetween(1, 50),
         ];
     }

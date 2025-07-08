@@ -28,7 +28,7 @@ export default function TutorShow({ tutor }) {
                                     src={
                                         tutor.pfp
                                             ? `/storage/${tutor.pfp}`
-                                            : "/default-avatar.png"
+                                            : "/defaultpfp.png"
                                     }
                                     alt={tutor.name}
                                     className="w-32 h-32 rounded-full object-cover border-4 border-blue-300 shadow-lg mb-2"

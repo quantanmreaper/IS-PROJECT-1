@@ -21,7 +21,7 @@ class GetCoursesController extends Controller
         $courses = Course::with('seller')
             ->select('id', 'user_id', 'title', 'description', 'thumbnail', 'price', 'status', 'created_at')
             ->where('status', 'published')
-            ->when(Auth::check(), function($query) {
+            ->when(Auth::check(), function ($query) {
                 return $query->where('user_id', '!=', Auth::id());
             })
             ->get()
@@ -122,10 +122,12 @@ class GetCoursesController extends Controller
         if ($user->user_type === 'standard user') {
             // Learner metrics (all users)
             $metrics['learner'] = [
-                'total_courses_enrolled' => CoursePurchase::where('user_id', $user->id)->count(),
+                'total_courses_enrolled' => CoursePurchase::where('user_id', $user->id)
+                    ->pluck('course_id')
+                    ->unique()
+                    ->count(),
                 'total_sessions_booked' => TutingSession::where('tutee_id', $user->id)->count(),
-                // 'total_reviews_written' => method_exists($user, 'reviews') ? $user->reviews()->count() : 0,
-                // 'total_courses_created' => method_exists($user, 'soldCourses') ? $user->soldCourses()->count() : 0,
+                'total_reviews_written' => \App\Models\CourseReview::where('user_id', $user->id)->count(),
             ];
 
             // Tutor metrics
@@ -155,7 +157,7 @@ class GetCoursesController extends Controller
                     'total_earnings' => round($totalEarnings, 2),
                 ];
             }
-        } 
+        }
         // Admin metrics - separate condition for admin users
         else if ($user->user_type === 'admin') {
             $metrics['admin'] = [
@@ -180,7 +182,7 @@ class GetCoursesController extends Controller
         $randomCourses = Course::with('seller')
             ->select('id', 'user_id', 'title', 'description', 'thumbnail', 'price', 'status')
             ->where('status', 'published')
-            ->when(Auth::check(), function($query) {
+            ->when(Auth::check(), function ($query) {
                 return $query->where('user_id', '!=', Auth::id());
             })
             ->inRandomOrder()
@@ -204,7 +206,7 @@ class GetCoursesController extends Controller
     public function myCourses()
     {
         $user = Auth::user();
-        
+
         // Get all courses where the user is the creator
         $courses = Course::with(['sections', 'purchases'])
             ->where('user_id', $user->id)
@@ -215,7 +217,7 @@ class GetCoursesController extends Controller
                 if ($course->thumbnail && !filter_var($course->thumbnail, FILTER_VALIDATE_URL)) {
                     $course->thumbnail = asset('storage/' . $course->thumbnail);
                 }
-                
+
                 // Add stats for each course
                 $course->stats = [
                     'total_students' => $course->purchases()->where('status', 'paid')->count(),
@@ -226,7 +228,7 @@ class GetCoursesController extends Controller
                     'total_reviews' => $course->reviews()->count(),
                     'average_rating' => $course->reviews()->count() > 0 ? (float) $course->reviews()->avg('rating') : 0,
                 ];
-                
+
                 return $course;
             });
 

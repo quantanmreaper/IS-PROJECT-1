@@ -249,7 +249,7 @@ class TutorBookingController extends Controller
             $stop = $b->scheduled_stop instanceof \Carbon\Carbon ? $b->scheduled_stop : \Carbon\Carbon::parse($b->scheduled_stop);
             $duration = $start && $stop ? $start->diffInHours($stop) : 0;
             $rate = optional($user->TutorDetails)->hourly_rate ?? 0;
-            $completed = property_exists($b, 'completed') ? $b->completed : ($b->actual_stop ? true : false);
+            $completed = $b->completion_status ? true : false;
             return $sum + ($completed ? ($duration * $rate) : 0);
         }, 0);
         // Prepare data for frontend

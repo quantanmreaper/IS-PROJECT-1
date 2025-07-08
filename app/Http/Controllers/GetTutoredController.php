@@ -67,34 +67,6 @@ class GetTutoredController extends Controller
      */
     public function show(string $id)
     {
-        // $tutor = User::where('is_tutor', true)
-        //     ->whereHas('tutorDetails')
-        //     ->with(['tutorDetails', 'units'])
-        //     ->findOrFail($id);
-
-        // $details = $tutor->tutorDetails;
-        // if ($details instanceof \Illuminate\Database\Eloquent\Collection) {
-        //     $details = $details->first();
-        // }
-
-        // $tutorData = [
-        //     'id' => $tutor->id,
-        //     'name' => $tutor->name,
-        //     'bio' => $tutor->bio ?? '',
-        //     'pfp' => $tutor->pfp ?? null,
-        //     'hourly_rate' => $details->hourly_rate ?? null,
-        //     'units' => $tutor->units->map(function ($unit) {
-        //         return [
-        //             'name' => $unit->name,
-        //             'proficiency_level' => $unit->pivot->proficiency_level ?? null,
-        //         ];
-        //     })->toArray(),
-        //     'availability_start' => $details->availability_start,
-        //     'availability_stop' => $details->availability_stop,
-        // ];
-
-        // return Inertia::render('Tutors/TutorShow', ['tutor' => $tutorData]);
-
         $tutor = User::with(['tutorDetails', 'tutorUnits.unit'])
             ->where('id', $id)
             ->first();
@@ -116,8 +88,8 @@ class GetTutoredController extends Controller
         $formattedTutor = [
             'id' => $tutor->id,
             'name' => $tutor->name,
-            'pfp' => $tutor->tutorDetails->pfp ?? null,
-            'bio' => $tutor->tutorDetails->bio ?? null,
+            'pfp' => $tutor->pfp ?? null,
+            'bio' => $tutor->bio ?? '',
             'hourly_rate' => $tutor->tutorDetails->hourly_rate ?? null,
             'availability_start' => $tutor->tutorDetails->availability_start ?? null,
             'availability_stop' => $tutor->tutorDetails->availability_stop ?? null,
