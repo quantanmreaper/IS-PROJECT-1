@@ -23,10 +23,17 @@ class DatabaseSeeder extends Seeder
         User::factory()->count(50)->create();
         Unit::factory()->count(15)->create();
         TutorUnit::factory()->count(20)->create();
+        TutorDetails::factory()->count(10)->create();
+        MentorDetails::factory()->count(10)->create();
+        // Courses and related
+        \App\Models\Course::factory()->count(20)->create();
+        \App\Models\CourseSection::factory()->count(40)->create();
+        \App\Models\Lesson::factory()->count(100)->create();
+        \App\Models\CoursePurchase::factory()->count(30)->create();
+        \App\Models\CourseReview::factory()->count(50)->create();
+        // Sessions, reviews, messages
         TutingSession::factory()->count(100)->create();
         Review::factory()->count(100)->create();
         Message::factory()->count(500)->create();
-        TutorDetails::factory()->count(10)->create();
-        MentorDetails::factory()->count(10)->create();
     }
 }

@@ -42,6 +42,7 @@ class TutionRequestsController extends Controller
                     'duration' => $duration,
                     'accepted' => $session->acceptance ?? false,
                     'tutee' => $session->tutee,
+                    'created_at' => $session->created_at ? $session->created_at->format('D, jS M Y g:i a') : null,
                 ];
             });
 

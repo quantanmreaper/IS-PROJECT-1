@@ -33,32 +33,32 @@ class TutorBookingController extends Controller
     {
         $tutor = User::findOrFail($tutorId);
         $units = $tutor->units()->select('units.id', 'units.name')->get();
-        
+
         // Get tutor's availability from TutorDetails
         $tutorDetails = $tutor->TutorDetails; // Note the capital T in TutorDetails to match the relationship
         Log::info('Tutor details retrieved', [
             'tutor_id' => $tutorId,
             'has_details' => !is_null($tutorDetails),
         ]);
-        
+
         $availability = [
             'start' => $tutorDetails ? $tutorDetails->availability_start : null,
             'stop' => $tutorDetails ? $tutorDetails->availability_stop : null,
         ];
-        
+
         // Get already booked sessions to prevent double booking
         $unavailableTimes = TutingSession::where('tutor_id', $tutorId)
             ->whereDate('scheduled_start', '>=', now())
             ->get(['scheduled_start', 'scheduled_stop'])
-            ->map(function($session) {
+            ->map(function ($session) {
                 return [
                     'start' => $session->scheduled_start,
                     'stop' => $session->scheduled_stop,
                 ];
             });
-        
+
         return Inertia::render('TutorBooking/Create', [
-            'tutor' => $tutor, 
+            'tutor' => $tutor,
             'units' => $units,
             'availability' => $availability,
             'unavailableTimes' => $unavailableTimes,
@@ -75,7 +75,7 @@ class TutorBookingController extends Controller
                 'tutor_id' => $tutorId,
                 'input' => $request->except(['_token']),
             ]);
-            
+
             $validated = $request->validate([
                 'unit_id' => 'required|exists:units,id',
                 'session_datetime' => 'required|date',
@@ -87,20 +87,20 @@ class TutorBookingController extends Controller
             $duration = (int) $request->input('duration');
             $tutorDetails = $tutor->TutorDetails;
             $hourlyRate = (float) ($tutorDetails ? $tutorDetails->hourly_rate : 0);
-            
+
             Log::info('Processing booking with rate', [
                 'hourly_rate' => $hourlyRate,
                 'duration' => $duration
             ]);
-            
+
             if ($hourlyRate < 0.1 || $duration < 1) {
                 Log::warning('Invalid rate or duration', [
-                    'hourly_rate' => $hourlyRate, 
+                    'hourly_rate' => $hourlyRate,
                     'duration' => $duration
                 ]);
                 return back()->withErrors(['session_datetime' => 'Tutor hourly rate or duration is invalid.']);
             }
-            
+
             $amount = round($hourlyRate * $duration, 2);
             $sessionStart = Carbon::parse($request->input('session_datetime'));
             $sessionStop = $sessionStart->copy()->addHours($duration);
@@ -159,7 +159,7 @@ class TutorBookingController extends Controller
                 'tutor_id' => $tutorId,
                 'input' => $request->except(['_token']),
             ]);
-            
+
             return back()->withErrors(['general' => 'An error occurred while processing your booking. Please try again.']);
         }
     }
@@ -218,6 +218,63 @@ class TutorBookingController extends Controller
             ]);
             return response()->json(['error' => 'Failed to initiate payment. Please try again.'], 500);
         }
+    }
+
+    /**
+     * Show accepted bookings and revenue/funds for the authenticated tutor.
+     */
+    public function tutorBookings()
+    {
+        $user = Auth::user();
+        if (!$user->is_tutor) {
+            abort(403, 'Only tutors can access this page.');
+        }
+        // Get all accepted bookings for this tutor
+        $bookings = \App\Models\TutingSession::where('tutor_id', $user->id)
+            ->where('acceptance', true)
+            ->with(['tutee', 'unit'])
+            ->orderByDesc('scheduled_start')
+            ->get();
+        // Calculate total revenue (all bookings)
+        $totalRevenue = $bookings->reduce(function ($sum, $b) use ($user) {
+            $start = $b->scheduled_start instanceof \Carbon\Carbon ? $b->scheduled_start : \Carbon\Carbon::parse($b->scheduled_start);
+            $stop = $b->scheduled_stop instanceof \Carbon\Carbon ? $b->scheduled_stop : \Carbon\Carbon::parse($b->scheduled_stop);
+            $duration = $start && $stop ? $start->diffInHours($stop) : 0;
+            $rate = optional($user->TutorDetails)->hourly_rate ?? 0;
+            return $sum + ($duration * $rate);
+        }, 0);
+        // Calculate available funds (completed bookings only)
+        $availableFunds = $bookings->reduce(function ($sum, $b) use ($user) {
+            $start = $b->scheduled_start instanceof \Carbon\Carbon ? $b->scheduled_start : \Carbon\Carbon::parse($b->scheduled_start);
+            $stop = $b->scheduled_stop instanceof \Carbon\Carbon ? $b->scheduled_stop : \Carbon\Carbon::parse($b->scheduled_stop);
+            $duration = $start && $stop ? $start->diffInHours($stop) : 0;
+            $rate = optional($user->TutorDetails)->hourly_rate ?? 0;
+            $completed = property_exists($b, 'completed') ? $b->completed : ($b->actual_stop ? true : false);
+            return $sum + ($completed ? ($duration * $rate) : 0);
+        }, 0);
+        // Prepare data for frontend
+        $bookingData = $bookings->map(function ($b) use ($user) {
+            $start = $b->scheduled_start instanceof \Carbon\Carbon ? $b->scheduled_start : \Carbon\Carbon::parse($b->scheduled_start);
+            $stop = $b->scheduled_stop instanceof \Carbon\Carbon ? $b->scheduled_stop : \Carbon\Carbon::parse($b->scheduled_stop);
+            $duration = $start && $stop ? $start->diffInHours($stop) : 0;
+            return [
+                'id' => $b->id,
+                'tutee_name' => optional($b->tutee)->name ?? '-',
+                'unit_name' => optional($b->unit)->name ?? '-',
+                'scheduled_start' => $start ? $start->format('Y-m-d H:i') : '-',
+                'scheduled_stop' => $stop ? $stop->format('Y-m-d H:i') : '-',
+                'duration' => $duration,
+                'status' => $b->actual_stop ? 'Completed' : 'Upcoming',
+                'amount' => optional($user->TutorDetails)->hourly_rate ? ($duration * $user->TutorDetails->hourly_rate) : 0,
+                'created_at' => $b->created_at ? $b->created_at->toDateTimeString() : null,
+            ];
+        });
+        return Inertia::render('Tutors/TutorBookings', [
+            'auth' => ['user' => $user],
+            'bookings' => $bookingData,
+            'totalRevenue' => $totalRevenue,
+            'availableFunds' => $availableFunds,
+        ]);
     }
 
     /**

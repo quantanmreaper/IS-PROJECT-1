@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\TutorUnit;
 use App\Models\User;
 use Inertia\Response;
+use App\Mail\WelcomeTutor;
+use Illuminate\Support\Facades\Mail;
 
 class TutorDetailsController extends Controller
 {
@@ -66,6 +68,9 @@ class TutorDetailsController extends Controller
         $user = User::find(Auth::id());
         $user->is_tutor = true;
         $user->save();
+
+        // Send welcome email
+        Mail::to($user->email)->send(new WelcomeTutor($user));
 
         return redirect()->route('dashboard')->with('success', 'Tutor registration successful. Your details are under review.');
     }

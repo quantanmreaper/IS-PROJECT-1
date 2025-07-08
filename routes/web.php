@@ -96,7 +96,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/CourseRegistration', [CourseRegistrationController::class, 'create'])->name('CourseRegistration');
     Route::post('/CourseRegistration', [CourseRegistrationController::class, 'store'])->name('CourseRegistration');
-    
+
     // New route for publishing courses
     Route::post('/courses/{course}/publish', [CourseRegistrationController::class, 'publish'])->name('courses.publish');
 });
@@ -143,6 +143,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('UnitsAddition', [UnitController::class, 'create'])->name('UnitsAddition');
     Route::post('UnitsAddition', [UnitController::class, 'store'])->name('UnitsAddition.store');
 
+    Route::get('/tutor/bookings', [TutorBookingController::class, 'tutorBookings'])->name('tutor.bookings');
 });
 
 // Payment callback route after IntaSend checkout

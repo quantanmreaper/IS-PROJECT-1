@@ -14,6 +14,34 @@ export default function PaymentSummary({ auth, payment }) {
         }
     };
 
+    // If required payment data is missing, redirect to booking form (prevents white screen on back navigation)
+    React.useEffect(() => {
+        if (
+            !payment ||
+            !payment.amount ||
+            !payment.ref ||
+            !payment.confirm_url ||
+            !payment.cancel_url
+        ) {
+            // Try to redirect to the booking form for tutoring if possible
+            if (payment && payment.cancel_url) {
+                // If cancel_url matches /bookTutor/create/{id}, use it
+                const match = payment.cancel_url.match(
+                    /bookTutor\/create\/(\d+)/
+                );
+                if (match) {
+                    window.location.replace(`/bookTutor/create/${match[1]}`);
+                    return;
+                }
+                // Otherwise, fallback to cancel_url
+                window.location.replace(payment.cancel_url);
+            } else {
+                // Fallback: go to dashboard or home
+                window.location.replace("/dashboard");
+            }
+        }
+    }, [payment]);
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Payment Summary" />

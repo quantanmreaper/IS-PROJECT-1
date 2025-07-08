@@ -11,6 +11,8 @@ use Illuminate\Http\RedirectResponse;
 //use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Mail\WelcomeMentor;
+use Illuminate\Support\Facades\Mail;
 
 class MentorDetailsController extends Controller
 {
@@ -51,6 +53,8 @@ class MentorDetailsController extends Controller
         if ($user instanceof \App\Models\User) {
             $user->is_mentor = true;
             $user->save();
+            // Send welcome email
+            Mail::to($user->email)->send(new WelcomeMentor($user));
         }
 
 
