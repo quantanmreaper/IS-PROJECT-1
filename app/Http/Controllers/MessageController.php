@@ -68,7 +68,7 @@ class MessageController extends Controller
         ->orderBy('created_at', 'asc')
         ->get();
 
-        // Add full URL to profile pictures in messages
+        // full URL to profile pictures in messages
         $messages->transform(function($message) {
             if ($message->sender && $message->sender->pfp && !str_starts_with($message->sender->pfp, 'http')) {
                 $message->sender->pfp = asset('storage/' . $message->sender->pfp);
@@ -94,7 +94,7 @@ class MessageController extends Controller
         // Load the sender relationship
         $message->load('sender');
         
-        // Add full URL to sender's profile picture
+        // full URL to sender's profile picture
         if ($message->sender && $message->sender->pfp && !str_starts_with($message->sender->pfp, 'http')) {
             $message->sender->pfp = asset('storage/' . $message->sender->pfp);
         }
